@@ -7,7 +7,8 @@ In this repository you'll find the skills I have developed and I'm using in my p
   1. [Installing a skill](#installing-a-skill)
   2. [/add-note](#add-note)
   3. [/line-by-line](#line-by-line)
-  4. [/spec, /plan, /build](#spec-plan-build)
+  4. [/map](#map)
+  5. [/spec, /plan, /build](#spec-plan-build)
 
 ## Installing a skill
 
@@ -97,6 +98,121 @@ Invoke it with a topic and the knowledge to note, e.g. `/add-note JS the differe
 ### How it works
 
 
+## /map
+
+### Purpose
+
+Keeps a generated map of a codebase — one document per layer, committed — so you
+can tell how your own project works after an agent has been writing in it.
+
+The thing you lose when you stop typing the code yourself is not the table list.
+It is the **seams**: which endpoint writes which table, which component calls
+which endpoint, what is now dead. So every entity in every map names what it
+reaches and what reaches it, and that is the column the format exists to force
+onto the page.
+
+Run it once when you open a project, and again before each PR. The first run
+gives you the shape; every later run gives you a diff.
+
+```
+docs/map/
+  README.md          index, with each map's commit and whether it is stale
+  db.md              tables → columns → types → keys → written by / read by
+  api.md             endpoints → auth → contract → handler → tables → called from
+  front.md           routes + components → state owned → calls → used by
+  deploy.md          environments, pipeline, and where every config value comes from
+.map/conventions.md  the map set, source globs, introspection commands
+```
+
+### Setup
+
+Install `map/` as described in [Installing a skill](#installing-a-skill). The
+first run writes `.map/conventions.md` — which maps this project gets, the globs
+each is derived from, and the commands that produce a schema or route listing
+mechanically. Commit it, along with `docs/map/` itself: the committed maps are
+the baseline the next run diffs against.
+
+### How it works
+
+```
+/map            first run → proposes a map set, you approve
+                → one subagent per map, in parallel
+                → a final pass transposes the seams
+                → offers a CLAUDE.md pointer
+
+/map            before a PR
+                → regenerates only the maps whose sources moved
+                → prints a change report, offers it as the PR body
+
+/map api        one map, unconditionally
+/map check      staleness only, writes nothing
+```
+
+The change report is what you read: added, changed and removed per layer, then
+the seams that moved, then a short "worth a look" — an endpoint with no caller, a
+new table with no index on the column it is filtered by, a variable the code
+reads that nothing sets. The maps are the reference you open when a line in the
+report surprises you.
+
+### Design decisions
+
+**A re-run on unchanged code must produce no diff.** This is the constraint the
+whole format obeys, and it is enforced structurally rather than hoped for: if a
+map's source globs have no commits since the SHA recorded on its first line, the
+file is not opened at all. Not regenerated and compared — not touched. Unchanged
+code cannot produce a diff, by construction.
+
+**Everything mechanical, sorted, one row per entity.** Tables alphabetically,
+endpoints by path, components by file path. No overview paragraph, no
+introduction, no conclusion — generated prose re-rolls itself on every run and
+buries three real changes in forty reworded ones. The output is tables, because
+tables diff.
+
+**One `Why` column, carried over verbatim.** It is the only prose in the output,
+and therefore the only thing that can reword itself. It holds what the code
+cannot say — why this is denormalised, why this endpoint is deliberately
+unauthenticated — and it is empty for most rows. Pinning it across runs means
+those notes accumulate instead of being rewritten by whichever model ran last.
+
+**Derive from a mechanical source wherever one exists.** `pg_dump -s`, the ORM
+schema, a generated OpenAPI document. Having a model retype 200 column types
+from migrations is slow and is the one place it will invent a `varchar(255)` that
+was never there.
+
+**Each map owns its outbound edges; inbound edges are transposed, never
+re-discovered.** `front` discovers component → endpoint, `api` discovers endpoint
+→ table, and a final pass reverses those columns to fill `Called from` and
+`Written by`. Two agents grepping for the same relationship from opposite ends
+disagree, and a user holding two maps that contradict each other trusts neither.
+Dead-code detection then falls out for free: an inbound column that comes out
+empty means nobody calls it.
+
+**One subagent per map, in parallel.** Each starts cold with its globs, its
+template and its commands, and returns counts and gaps — not narration. The
+orchestrator derives the report from `git diff` on the written files, so what you
+read is the committed content, not an agent's account of it.
+
+**`?` beats a guess, and every `?` is listed under `Gaps`.** An invented "Used
+by" makes you delete live code. The maps say what they could not determine and
+why — dynamic dispatch, a caller outside the repo, no access to the database.
+
+**Diagrams are one per map, bounded, and fall back to a table.** A foreign-key
+graph, a middleware chain, one route's data flow, the deploy pipeline. Never the
+component tree: a 200-node Mermaid graph is unreadable and its diff is garbage.
+
+**The maps are generated-only, and `/map` writes no application code.** Durable
+knowledge you want to keep goes in a `Why` cell, which survives, or into your
+notes via [`/add-note`](#add-note) — not into a file the next run overwrites. A
+run that also "fixed something while it was in there" is a run you can no longer
+trust to be read-only.
+
+**`/spec` and `/plan` read the maps, and distrust them when stale.** The pointer
+in `CLAUDE.md` means a cold agent gets the project's shape for one read instead
+of exploring blind. Both skills check the recorded commit first and treat a map
+that is behind on its own sources as absent — a stale map is a confident wrong
+answer, which is worse than none.
+
+
 ## /spec, /plan, /build
 
 ### Purpose
@@ -107,9 +223,22 @@ plan, a third builds it. Project-agnostic.
 
 | Stage | Skill | Writes | Reads |
 |---|---|---|---|
-| 1 | `spec` | `README.md` + `US-NN-*.md` | the repo + you |
+| 1 | `spec` | `README.md` + `US-NN-*-spec.md` | the repo + you |
 | 2 | `plan` | `US-NN-*-plan.md` | one spec + the repo |
 | 3 | `build` | code | one spec + its plan |
+
+One folder per feature, one folder per story inside it, so everything about a
+story sits in a single directory:
+
+```
+docs/specs/FEAT-multi-library/
+  README.md                            # feature overview + ordered story table
+  US-01-library-scoped-reads/
+    US-01-library-scoped-reads-spec.md
+    US-01-library-scoped-reads-plan.md
+  US-02-librarian-invitations/
+    US-02-librarian-invitations-spec.md
+```
 
 Each stage starts with clean context and hands off through a document. Nothing
 travels between stages except what is written down — which is why the spec is
@@ -135,7 +264,7 @@ skills read it, and it is what keeps project plumbing out of the interview.
   you: read the specs, correct, validate            ← the gate that matters
 
 /plan US-01                 (clean context)
-    → writes US-01-…-plan.md
+    → writes US-01-…-plan.md beside the spec, in the story's folder
   you: skim
 
 /build US-01                (clean context)
