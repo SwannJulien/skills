@@ -40,7 +40,9 @@ are read, not enforced.
 ## Documents
 
 - **Language**: <language the spec documents are written in>
-- **Specs root**: `<path>` — one folder per feature, `<slug>/README.md` + `US-NN-<slug>.md`
+- **Specs root**: `<path>` — one folder per feature `FEAT-<slug>/`, holding
+  `README.md` and one folder per story `US-NN-<slug>/` with
+  `US-NN-<slug>-spec.md` and `US-NN-<slug>-plan.md` inside
 - **Numbering**: per feature folder, from `US-01`
 - **Code language**: <language of identifiers, comments and commit messages>
 

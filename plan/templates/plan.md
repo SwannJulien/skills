@@ -1,6 +1,6 @@
 # US-NN — Implementation plan
 
-[← Spec](US-NN-<slug>.md) · [← Feature](README.md)
+[← Spec](US-NN-<slug>-spec.md) · [← Feature](../README.md)
 
 > Disposable. The spec is the durable document; this plan is a route through the
 > code as it stood on <date> and may be deleted once the story ships.

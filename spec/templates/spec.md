@@ -1,6 +1,6 @@
 # US-NN — <Title: the outcome, not the task>
 
-[← Feature](README.md)
+[← Feature](../README.md)
 
 | | |
 |---|---|

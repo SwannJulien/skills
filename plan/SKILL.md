@@ -1,6 +1,6 @@
 ---
 name: plan
-description: Write an implementation plan for one already-approved user story specification (a US-NN document written by the spec skill). Use when the user points at such a spec and wants the implementation worked out before any code is written ("plan US-03", "write the plan for this spec", "/plan"). Second stage of spec-driven development — reads the spec and the repo, writes a sibling plan document, writes no code. Not for general planning, and not a substitute for plan mode.
+description: Write an implementation plan for one already-approved user story specification (a US-NN-*-spec.md document written by the spec skill). Use when the user points at such a spec and wants the implementation worked out before any code is written ("plan US-03", "write the plan for this spec", "/plan"). Second stage of spec-driven development — reads the spec and the repo, writes a sibling plan document, writes no code. Not for general planning, and not a substitute for plan mode.
 ---
 
 # Plan
@@ -11,7 +11,7 @@ You write a plan document. **You write no code and you do not modify the spec.**
 
 ## Which story
 
-The user names one (`US-03`, a path, "the next one"). If they don't, read the feature `README.md`, find the first story whose acceptance criteria are not all ticked, and confirm that is the one before starting.
+The user names one (`US-03`, a path, "the next one"). If they don't, read the feature `README.md` (one level up from the story folders), find the first story whose acceptance criteria are not all ticked, and confirm that is the one before starting.
 
 Plan exactly one story. Planning two at once produces a plan that only works if both are implemented together, which breaks the one property the spec was cut to have.
 
@@ -20,13 +20,20 @@ Plan exactly one story. Planning two at once produces a plan that only works if 
 1. **`.spec/conventions.md`** — how this project builds, verifies, migrates, and what must not be run without asking. If it is missing, the spec skill's bootstrap has not run; say so and stop.
 2. **The spec**, whole. Its **Decisions and non-goals** section is binding: a rejected alternative is not yours to re-propose, and a stated non-goal is not yours to include. If you think a decision is wrong, say so to the user — do not quietly plan around it.
 3. **The feature `README.md`** — shared setup, feature-wide decisions, ordering.
-4. **The code**, properly. Read every file you intend to touch, not just its name. The plan's value is that it is written against the code as it actually is.
+4. **`docs/map/`**, if it exists — the generated map per layer, which gives you the endpoints, tables and components this story touches and, in its seam columns, what else depends on them. Use it to find what you must read, and to find the callers a change will break. Check each map's first line: if the recorded commit is behind the sources it lists, treat that map as absent. Never cite a map where the plan needs a real path and line, and never edit one.
+5. **The code**, properly. Read every file you intend to touch, not just its name. The plan's value is that it is written against the code as it actually is.
 
 The spec is self-sufficient by design — you were never meant to see the conversation that produced it. If something genuinely cannot be resolved from the spec plus the repo, ask the user; don't guess, and don't pad the gap with a plausible invention.
 
 ## The plan
 
-Write to `<spec-dir>/US-NN-<slug>-plan.md` using `templates/plan.md`, in the language set in `.spec/conventions.md`.
+Write to `<story-dir>/US-NN-<slug>-plan.md` using `templates/plan.md`, in the language set in `.spec/conventions.md` — beside the spec, inside the story's own folder:
+
+```
+<specs-root>/FEAT-<feature-slug>/US-NN-<slug>/
+  US-NN-<slug>-spec.md     # stage 1, yours to read, never to edit
+  US-NN-<slug>-plan.md     # this document
+```
 
 What makes it useful:
 

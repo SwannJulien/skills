@@ -28,8 +28,8 @@ verification** section describes the exact walkthrough.
 
 | # | Title | Kind | Scope | Depends on |
 |---|---|---|---|---|
-| [US-01](US-01-<slug>.md) | <title> | feature | <layers> | — |
-| [US-02](US-02-<slug>.md) | <title> | enabler | <layers> | US-01 |
+| [US-01](US-01-<slug>/US-01-<slug>-spec.md) | <title> | feature | <layers> | — |
+| [US-02](US-02-<slug>/US-02-<slug>-spec.md) | <title> | enabler | <layers> | US-01 |
 
 ---
 

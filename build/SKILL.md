@@ -1,6 +1,6 @@
 ---
 name: build
-description: Implement one user story from its approved specification (a US-NN document) and its plan, then tick off its acceptance criteria and run its end-to-end verification. Use when the user wants a specced and planned story built ("build US-03", "implement this story", "/build"). Third stage of spec-driven development — reads the spec and plan, writes the code, reports which criteria it could not verify. Not for compiling or running the project, and not for feature work that has no spec.
+description: Implement one user story from its approved specification (a US-NN-*-spec.md document) and its plan, then tick off its acceptance criteria and run its end-to-end verification. Use when the user wants a specced and planned story built ("build US-03", "implement this story", "/build"). Third stage of spec-driven development — reads the spec and plan, writes the code, reports which criteria it could not verify. Not for compiling or running the project, and not for feature work that has no spec.
 ---
 
 # Build
@@ -10,6 +10,8 @@ Third stage of a three-stage pipeline. The specification is approved, the plan i
 ## Which story
 
 The user names one. If they don't, read the feature `README.md` and take the first story whose acceptance criteria are not all ticked — then confirm before writing anything.
+
+Each story lives in its own folder under the feature: `FEAT-<feature-slug>/US-NN-<slug>/`, holding `US-NN-<slug>-spec.md` and `US-NN-<slug>-plan.md`. If the plan is missing, stage 2 has not run — say so and stop.
 
 One story per run. The stories were cut to be shippable alone; implementing two at once forfeits that.
 

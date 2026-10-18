@@ -9,7 +9,7 @@ First stage of a three-stage pipeline. Each stage hands off through a document, 
 
 | Stage | Skill | Writes | Reads |
 |---|---|---|---|
-| 1 | `spec` (this one) | `README.md` + `US-NN-*.md` | the repo + the user |
+| 1 | `spec` (this one) | `README.md` + `US-NN-*-spec.md` | the repo + the user |
 | 2 | `plan` | `US-NN-*-plan.md` | one spec + the repo |
 | 3 | `build` | code | one spec + its plan |
 
@@ -26,6 +26,10 @@ If it is missing, bootstrap it: follow `references/bootstrap.md`, write the file
 ## Stage 1 — Research before asking anything
 
 Read the code first. Every question you ask that the repo could have answered burns the user's patience and teaches them to skim your output — and skimmed output defeats the human gate this whole pipeline rests on.
+
+**Start from `docs/map/` if it exists.** The `map` skill keeps a generated document per layer — schema, endpoints, components, deployment — where every entity names what it reaches and what reaches it. Reading the relevant maps first tells you in one pass which tables, endpoints and components this feature touches, and it is the fastest way to notice something already exists. Then read the actual code for the parts that matter.
+
+Each map's first line records the commit it was generated at and the globs it covers. **If it is behind on those globs, treat the map as absent and read the code.** A stale map is a confident wrong answer, which is worse than no answer. Never edit a map, and never cite one in a spec in place of the code it describes.
 
 Find out, at minimum:
 
@@ -92,13 +96,19 @@ Say it once, plainly, with the evidence. If the user reaffirms the original requ
 Only after approval. Write into the location given by `.spec/conventions.md`:
 
 ```
-<specs-root>/<feature-slug>/
-  README.md              # feature overview + ordered story table
-  US-01-<slug>.md
-  US-02-<slug>.md
+<specs-root>/FEAT-<feature-slug>/
+  README.md                        # feature overview + ordered story table
+  US-01-<slug>/
+    US-01-<slug>-spec.md
+  US-02-<slug>/
+    US-02-<slug>-spec.md
 ```
 
+The feature folder is always prefixed `FEAT-`. Each story gets **its own folder**, named `US-NN-<slug>`, holding `US-NN-<slug>-spec.md` — stage 2 drops `US-NN-<slug>-plan.md` in beside it, so everything about one story lives in one directory.
+
 Numbering is **per feature folder**, starting at `US-01`. Never global across the project — concurrent features would collide.
+
+Links in the documents are relative: a story links back to its feature as `../README.md`; the feature README links to a story as `US-NN-<slug>/US-NN-<slug>-spec.md`.
 
 Use `templates/spec.md` for each story and `templates/feature-readme.md` for the index. Write in the language set in `.spec/conventions.md`.
 
