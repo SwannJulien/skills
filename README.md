@@ -261,18 +261,27 @@ skills read it, and it is what keeps project plumbing out of the interview.
   you: approve or re-cut
     → writes one document per story
 
-  you: read the specs, correct, validate            ← the gate that matters
+  you: read the spec, correct, validate             ← gate 1: the behavior
 
 /plan US-01                 (clean context)
     → writes US-01-…-plan.md beside the spec, in the story's folder
-  you: skim
+    → ends with "nothing needs you" or what you must decide first
 
 /build US-01                (clean context)
-    → builds it, ticks the acceptance criteria, runs the walkthrough
+    → builds it, ticks the acceptance criteria, runs what it can of the walkthrough
+
+  you: perform the walkthrough, report each point   ← gate 2: the result
+    → each point is fixed as a bug, or proposed as a spec amendment
+  you: "walkthrough OK"
+    → re-verifies every criterion, reruns lint and tests, offers a commit
 ```
 
-Repeat the last two per story. Re-run `/spec` only when the feature changes
-shape.
+Repeat from `/plan` per story, reading each spec before planning it. Re-run
+`/spec` only when the feature changes shape.
+
+There are two human gates. The plan is not one: once you agree on the behavior,
+the route is the agent's, and plan's final message tells you if anything needs
+you before building.
 
 Each story document carries the same sections: the user story or objective, the
 context quoted from the code as it is today, the decisions and non-goals,
@@ -310,7 +319,9 @@ signal in the pipeline.
 
 **The spec is written once and amended only by a human.** If implementation shows
 the spec is wrong, the stage stops and reports. A spec edited to match the code
-is a description, not a specification.
+is a description, not a specification. When walkthrough feedback changes what
+you want, build proposes the amendment — the edit, a dated decision, the later
+stories it affects — and applies it only once you approve.
 
 **The spec agent may argue back.** If the request is really one story, or three
 features under one name, or already built, it says so with the evidence — once.

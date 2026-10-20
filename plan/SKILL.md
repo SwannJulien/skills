@@ -66,3 +66,10 @@ Collect that under **To promote into the spec** at the end of the plan, as a sug
 ## Finish
 
 Report: the plan path, the step count, any acceptance criterion you could not map to a step, anything you flagged for promotion, and anything in the spec you believe is wrong.
+
+The user may never open the plan — agreeing on the spec is their gate, the route is yours. So anything that needs them must be in this report, not only in the document. End with exactly one of:
+
+- **Nothing needs you — run `/build`.** Only when no criterion is unmapped and nothing in the spec is wrong.
+- **Before building, you need to:** a short numbered list — each item the decision or spec amendment required, and why building without it would go wrong.
+
+Items for promotion into **Watch out for** never block the build. List them under the verdict as optional.

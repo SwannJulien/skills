@@ -1,6 +1,6 @@
 ---
 name: build
-description: Implement one user story from its approved specification (a US-NN-*-spec.md document) and its plan, then tick off its acceptance criteria and run its end-to-end verification. Use when the user wants a specced and planned story built ("build US-03", "implement this story", "/build"). Third stage of spec-driven development — reads the spec and plan, writes the code, reports which criteria it could not verify. Not for compiling or running the project, and not for feature work that has no spec.
+description: Implement one user story from its approved specification (a US-NN-*-spec.md document) and its plan, then tick off its acceptance criteria and run its end-to-end verification. Use when the user wants a specced and planned story built ("build US-03", "implement this story", "/build"). Third stage of spec-driven development — reads the spec and plan, writes the code, reports which criteria it could not verify, then handles the user's walkthrough feedback and closes the story out when they confirm it ("walkthrough OK", "step 2 of US-03 isn't right"). Not for compiling or running the project, and not for feature work that has no spec.
 ---
 
 # Build
@@ -44,7 +44,7 @@ Two things, in order.
 
 **1. The acceptance criteria.** Go through them one at a time and establish that each actually holds — by running something, not by reading your own diff and feeling confident. Then tick the box in the spec file: `- [ ]` → `- [x]`.
 
-That checkbox edit is the **only** change you may make to the spec document. Nothing else in it, not a word.
+That checkbox edit is the **only** change you may make to the spec document on your own initiative. The one other edit is an amendment the user has approved — see "Amending the spec" below.
 
 Leave unticked anything you could not verify, and say why in your report. An unticked box is useful information; a ticked box that isn't true poisons every later stage.
 
@@ -62,3 +62,37 @@ Run the project's lint and test commands from `.spec/conventions.md`. If the pro
 - Anything you believe is wrong in the spec.
 
 State completion plainly when it is true and verified. When it isn't, say which part isn't, without hedging the rest.
+
+## After the user's walkthrough
+
+The report is not the end of the story. The user now performs the walkthrough themselves — it is their acceptance test — and comes back with one of two things: feedback on a step, or a confirmation that it all works.
+
+### Feedback on a step
+
+Before changing anything, say which kind it is — the two need different fixes:
+
+- **A bug** — the code does not do what the spec says. Fix the code. Then re-verify every criterion the fix could have touched, and untick any that no longer hold.
+- **A change of expectation** — the code does what the spec says, and the user now wants something else. Fixing only the code leaves the spec describing behavior that no longer exists, and the next story is planned against it. Treat it as an amendment.
+
+If you can't tell which it is, quote the scenario or criterion and ask.
+
+### Amending the spec
+
+Propose the amendment before applying it, in one message:
+
+1. The exact edit to the spec — the scenario, criterion or walkthrough step as it will read.
+2. A dated line to add under **Decisions and non-goals**: what changed and why, in the user's words.
+3. The other stories it affects. Read the feature `README.md` and the specs of the stories not yet built; name each one whose Context, scenarios or decisions this change makes wrong, and the feature README's own decisions if they are affected.
+
+Apply it only once the user approves — spec edit, code change, and the README if it is affected. Do **not** edit other stories' specs: list them in your report so the user amends them before planning them.
+
+Never amend the spec to absorb a bug. If the code is wrong, the code changes.
+
+### Walkthrough confirmed
+
+When the user says the walkthrough passed, close the story out — without being asked:
+
+1. Re-verify **every** acceptance criterion, including those you ticked before the walkthrough: code changed since then. Untick any that no longer hold; tick those that were waiting on the user's steps, now that you have their observed result.
+2. Run lint and tests again.
+3. Report: criteria ticked, any left unticked and why, lint and test output, amendments made and the stories they affect.
+4. If everything holds, say the story is done and offer to commit it. Never commit without being asked.
