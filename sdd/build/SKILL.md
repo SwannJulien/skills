@@ -19,7 +19,7 @@ One story per run. The stories were cut to be shippable alone; implementing two 
 
 ## Read before writing
 
-1. **The project's agent instructions** (`CLAUDE.md` or `.claude/CLAUDE.md`, `AGENTS.md`) — build and verify commands, code language, house style, and the commands that must not be run without asking. Respect that last list: it exists because something in this project bites. They outrank the plan on matters of house style, and the plan's author may have missed one.
+1. **The project's agent instructions** (`CLAUDE.md` or `.claude/CLAUDE.md`, `AGENTS.md`) — build and verify commands, code language, house style, and the commands that must not be run without asking. Respect that last list: it exists because something in this project bites. Where they describe style, naming or structure, the code outranks them; where they require something, they bind — see "Build it".
 2. **`.claude/spec/conventions.md`** — where specs live, the test levels, and how a walkthrough is performed.
 3. **The spec**, whole. The acceptance criteria are your definition of done. The scenarios are the behavior you owe. **Decisions and non-goals** is binding — a non-goal is not a nice extra to add.
 4. **The plan**.
@@ -56,6 +56,14 @@ You are the implementer. **The scenario tests are not yours to change.** They ar
 Unit tests for internals the plan creates are yours to add where they help; they don't carry a scenario's name.
 
 Work down the plan's steps in order. Follow the surrounding code's conventions — naming, comment density, error handling, idiom — over your own preferences; a change that reads as foreign is a change the next reader distrusts.
+
+**The code is the source of truth for how things are done here** — style, naming, structure, patterns — over the plan, the agent instructions, ADRs, the glossary and the maps where they merely *describe* it. Descriptions go stale: where one disagrees with the code, follow the code and report the disagreement so the human corrects the document; never edit the document to match. Three limits:
+
+- **A document's explicit requirements still bind** — a *must* or *never*, a stated constraint, a declared migration, what must not be run. Code that falls short of one is debt to report, not an example to copy.
+- **A defect is never a pattern.** Don't reproduce a security or correctness problem because the code next to yours has it; write the correct version and report the existing one.
+- **The spec decides the behavior you add** — the code doesn't have it yet.
+
+Where the code disagrees with itself, follow the pattern nearest to what you change — unless a declared migration names the other one — and say which.
 
 The plan is a route, not a contract. If a step turns out to be wrong or impossible, do the right thing instead and **say so in your report**, with the reason. What you may not do is quietly implement something that doesn't satisfy the acceptance criteria.
 

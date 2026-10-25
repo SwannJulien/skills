@@ -13,6 +13,20 @@ implementer from rediscovering it.>
 
 ---
 
+## Design choices
+
+<Only choices a reasonable engineer could have made the other way that are hard
+to reverse, add a dependency, change a contract outside this story, or depart
+from the project's pattern. "None" is a common answer.>
+
+- **<The choice>** — rejected: <the alternative>, because <why>. Reversing it
+  costs: <a migration, a contract change, …>. Later stories: <US-NN it serves or
+  constrains, and how; or none>.
+  ADR draft, if it is hard to reverse, surprising, and a real trade-off:
+  > <context, decision, why — one to three sentences>
+
+---
+
 ## Test map
 
 <Self-contained: build hands this section alone to the test-writer, who never

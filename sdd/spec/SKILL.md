@@ -37,7 +37,7 @@ Find out, at minimum:
 
 - Which files, tables, endpoints and components this feature touches, and what they currently do.
 - What already exists that the user may not realise exists (half-built, or built and broken).
-- The project's own documented rules and hazards (`CLAUDE.md`, `AGENTS.md`, `docs/`, ADRs). These constrain the spec and belong in it.
+- The project's own documented rules and hazards (`CLAUDE.md`, `AGENTS.md`, `docs/`, ADRs). These constrain the spec and belong in it. But on what the system is and how it is built — structure, naming, existing behavior — the code is the source of truth: where a document's description disagrees with it, quote the code in Context and report the contradiction to the user. A document's explicit requirements — a *must* or *never*, a stated constraint, a declared migration — still constrain the spec, even where the code falls short of them.
 - How the thing is verified today: the test levels and harnesses in `.claude/spec/conventions.md`, the existing tests that cover what this feature touches, and the walkthrough interfaces.
 
 Read the actual code, not just file names. The best specs quote the code that is wrong; the worst paraphrase it from a distance.
@@ -80,7 +80,7 @@ After each round, recompute the frontier. Answers open branches; that is the poi
 - **Probe boundaries with concrete scenarios.** Invent the case that forces a choice: "a member with two holds returns a copy — which hold is served?" The answers become the spec's scenarios.
 - **Cross-check against the code.** "You said partial cancellation is possible; the code cancels whole orders. Which is right?"
 
-When a term resolves, write it into the glossary **at once**, in the format of `templates/glossary.md` — not in a batch at the end. Create the file lazily, when the first term resolves. The glossary holds vocabulary only: no behavior, no decisions, no implementation. Those belong in the spec documents.
+When a term resolves, write it into the glossary **at once**, in the format of `templates/glossary.md` — not in a batch at the end. Create the file lazily, when the first term resolves. Where the code already names the concept, that name is what identifiers keep: if the term the user settles on differs, add the code's name to the entry as _In code_, so plan and build can map one to the other. The glossary holds vocabulary only: no behavior, no decisions, no implementation. Those belong in the spec documents.
 
 ### When to stop
 

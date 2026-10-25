@@ -359,8 +359,9 @@ Recommended order. Tick when merged into the skills.
   - Done 2026-10-25: bootstrap records test levels (missing harness → enabler story); plan writes a self-contained test map and lists existing tests the story changes (§7 `ApiAuthorizationMatrixTest`); build dispatches a test-writer from spec + test map only, checks red, implements without editing tests, runs the whole suite end-to-end included.
 - [x] Grilling interview and reviewable gate 1 (Part 3, intro) — spec, plan
   - Done 2026-10-25: decision-tree rounds starting from the problem, each question with a recommendation "yes" accepts, no silent assumptions, no question cap; glossary written as terms resolve (`templates/glossary.md`, path in conventions); UI flow sketch in the proposal; Stage 5 checks "so that", verbatim texts and glossary terms; Stage 6 review digest and `Status: approved — <date>`, which plan requires.
-- [ ] Plan escalates design choices, ADRs offered (Part 3, §1) — plan
-- [ ] Plan reads unbuilt sibling specs (Part 3, §2) — plan
+- [x] Plan escalates design choices, ADRs offered (Part 3, §1) — plan
+- [x] Plan reads unbuilt sibling specs (Part 3, §2) — plan
+  - Done 2026-10-25: plan reads the unbuilt specs' Scope, Decisions and Scenarios; a **Design choices** section lists choices that are hard to reverse, add a dependency, change an outside contract or depart from the pattern, with the rejected alternative, reversal cost and effect on later stories; conflicts with a later story go to **Problems found in the spec**; verdict puts each choice to the user as a "yes"-accepts question; ADR drafted when it passes the three gates and written only on acceptance. Not done: the optional feature-level design note.
 - [ ] Non-functional branches in the decision tree (Part 3, §3) — spec
 - [ ] Code review before the build report (Part 3, §4) — build
 - [ ] Mechanical checks: test-file hash, scenario-name grep, Status check (Part 3, §5) — build, plan

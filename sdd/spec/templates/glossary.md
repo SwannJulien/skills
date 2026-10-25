@@ -7,6 +7,7 @@
 **<Term>**:
 <One or two sentences: what it is, not what it does.>
 _Avoid_: <the other words people use for it>
+_In code_: `<the identifier, only when it differs from the term>`
 
 <!--
 Rules:
@@ -14,7 +15,9 @@ Rules:
   error types, retries) do not belong, even if the project uses them a lot.
 - Be opinionated: when several words name one concept, pick one and list the
   others under _Avoid_.
-- No behavior, no decisions, no implementation. Those live in the specs.
+- No behavior, no decisions, no implementation. Those live in the specs. The
+  one exception is _In code_: the code's name for the concept, when it differs.
+  The code's names win for identifiers; the glossary's for prose.
 - Group terms under subheadings when clusters emerge; a flat list is fine
   otherwise.
 - Written the moment a term resolves during the spec interview. Edit freely:

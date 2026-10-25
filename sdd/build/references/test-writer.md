@@ -29,7 +29,8 @@ by absolute path to this file.
 - **Drive the entry point the test map names**, through its real interface. If
   it does not exist yet, code against it exactly as named; the test must then
   fail until the code lands. Do not stub what the test is meant to prove.
-- **Read the existing tests first, and look like them.** Reuse their helpers,
+- **Read the existing tests first, and look like them** — they, not any
+  document, are the source of truth for how tests are written here. Reuse their helpers,
   fixtures, page objects and setup. A second way of logging in a test user is a
   second thing to maintain.
 - **Rewrite the tests listed under "Existing tests this story changes"** to

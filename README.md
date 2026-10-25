@@ -296,7 +296,11 @@ Repeat from `/plan` per story, reading each spec before planning it. Re-run
 
 There are two human gates. The plan is not one: once you agree on the behavior,
 the route is the agent's, and plan's final message tells you if anything needs
-you before building.
+you before building. That includes its significant design choices — anything
+hard to reverse, a new dependency, a changed contract — each with the
+alternative it rejected and what it means for the stories not yet built, which
+plan reads so that one story's design doesn't corner the next. A choice worth
+remembering comes with a drafted ADR, written only if you accept it.
 
 Each story document carries the same sections: the user story or objective, the
 context quoted from the code as it is today, the decisions and non-goals,
@@ -320,6 +324,17 @@ rather than a list of files: the decisions it made without you, every text the
 system's user will read, and where it is least sure. Each story carries a
 `Status`; only your approval sets it to `approved`, and plan refuses anything
 else.
+
+**The code is the source of truth for how things are done here.** Style,
+naming, structure and patterns come from the code, not from what `CLAUDE.md`,
+ADRs, the glossary, the maps or a plan say about it — descriptions go stale.
+When one disagrees with the code, the stages follow the code and report the
+disagreement for you to fix the document. Three limits: a document's explicit
+requirements — a *must* or *never*, a constraint, a declared migration, what
+must not be run — still bind, and code that falls short of one is debt, not an
+example; a defect is never a pattern, so a security or correctness problem next
+door is reported, not copied; and the behavior a story adds comes from the spec,
+because the code doesn't have it yet.
 
 **A story is "independently verifiable and shippable", not "touches every
 layer."** A layer quota makes the agent pad backend stories with UI work to
