@@ -1,6 +1,6 @@
 ---
 name: spec
-description: Write specifications for a feature as a set of independently verifiable user stories, before any code is planned or written. Use when the user wants to spec out a feature, break a feature into user stories, write acceptance criteria, or start spec-driven development ("spec this out", "write the spec for X", "cut this into user stories", "/spec"). Interviews the user, proposes a decomposition for approval, then writes one document per story. Does not plan implementation and does not write code — those are the plan and build skills.
+description: Write specifications for a feature as a set of independently verifiable user stories, before any code is planned or written. Use when the user wants to spec out a feature, break a feature into user stories, write acceptance criteria, or start spec-driven development ("spec this out", "write the spec for X", "cut this into user stories", "/spec"). Grills the user on the need decision by decision and pins the domain vocabulary, proposes a decomposition for approval, writes one document per story, then hands over a review digest and records the user's approval. Does not plan implementation and does not write code — those are the plan and build skills.
 ---
 
 # Spec
@@ -9,7 +9,7 @@ First stage of a three-stage pipeline. Each stage hands off through a document, 
 
 | Stage | Skill | Writes | Reads |
 |---|---|---|---|
-| 1 | `spec` (this one) | `README.md` + `US-NN-*-spec.md` | the repo + the user |
+| 1 | `spec` (this one) | `README.md` + `US-NN-*-spec.md`, glossary terms | the repo + the user |
 | 2 | `plan` | `US-NN-*-plan.md` | one spec + the repo |
 | 3 | `build` | tests, then code | one spec + its plan |
 
@@ -19,7 +19,9 @@ Your job ends at the specification. **Write no code, plan no implementation, nam
 
 ## Stage 0 — Conventions
 
-Read `.claude/spec/conventions.md` — where specs live, the layers a story can name, how a walkthrough is performed — and the project's agent instructions (`CLAUDE.md` or `.claude/CLAUDE.md`, `AGENTS.md`) for languages, commands and hazards.
+Read `.claude/spec/conventions.md` — where specs live, where the glossary lives, the layers a story can name, how a walkthrough is performed — and the project's agent instructions (`CLAUDE.md` or `.claude/CLAUDE.md`, `AGENTS.md`) for languages, commands and hazards. Then read the glossary, if one exists: its terms are the words the interview and the documents use.
+
+If the conventions file names no glossary, look for `GLOSSARY.md` at the repo root. If there is none, ask where it should go when the first term resolves — once — and record the answer in the conventions file.
 
 If the conventions file is missing, bootstrap it: follow `references/bootstrap.md`, which also checks the agent instructions cover what the three stages need. Write the file, show the user a summary, and ask them to confirm before continuing. This happens once per project. Do not spend interview questions on things that belong in either file.
 
@@ -40,31 +42,63 @@ Find out, at minimum:
 
 Read the actual code, not just file names. The best specs quote the code that is wrong; the worst paraphrase it from a distance.
 
-## Stage 2 — Interview: at most 10 questions
+## Stage 2 — Grill: walk the decision tree until nothing is assumed
 
-**Spend questions only where different answers produce different stories.** Scope boundaries, which users or roles are involved, what happens on failure, what is explicitly out, what "done" means for the user. Not implementation choices — those are not yours to decide or to ask about.
+The interview's job is a shared understanding of the need, not just a decomposition. A spec that faithfully describes the solution the user named, when they needed something else, is the most expensive failure in this pipeline: every later stage executes it well, and it surfaces at the walkthrough.
 
-For everything else: **assume, and write the assumption down.** A stated assumption the user can correct in review is cheaper for them than a question they have to answer up front. This typically halves the interview.
+Map the interview as a **decision tree**: every decision branches into the decisions that hang off it. Settle the root first — **the problem**:
 
-Mechanics:
+- Who has it, and what they do today instead.
+- What they will observe once it is solved. This becomes the "so that" of the stories, and Stage 5 checks the scenarios against it; if the user cannot say it, nothing downstream can check it.
+- If the request names a solution, what it is for. Arguing back needs the goal, not only the code — the code may offer a cheaper route to the same outcome.
 
-- Use `AskUserQuestion`, maximum 4 per call, two or three rounds at most.
-- Give a recommended option first where you have a view. You have read the code; they are relying on that.
-- Ten is a ceiling, not a target. Three good questions is a better interview than ten adequate ones.
-- Stop early once nothing left would change the decomposition.
+Then the branches the problem opens: roles, scope boundaries, what happens on failure, what is explicitly out, and the words the user uses for things.
+
+**Facts are yours; decisions are theirs.** Anything the repo can answer, look up — in a subagent if your agent can dispatch one, so the round is not blocked: only the questions that depend on that fact wait for it. Never ask the user what the code says. What the system should do is theirs: put each such decision to them. Implementation choices are neither's here — they belong to plan, so don't ask about them.
+
+### Rounds
+
+The **frontier** is every open decision whose prerequisites are settled. Ask the whole frontier in one round, numbered, then wait. A question whose answer depends on another question still open in this round belongs to the next one.
+
+```
+**Q1 — <title>**: <the question, with the options where there are some, and
+what you found in the code that bears on it>
+
+➡️ <your recommended answer>
+```
+
+Word each question so "yes" accepts your recommendation, and tell the user once that "yes to all except Q3: …" works. You have read the code; they are relying on your recommendation.
+
+**Nothing is silently assumed.** Where you would have assumed, ask with a recommendation instead: a "yes" costs the user about what reading a written assumption costs, and unlike an assumption buried in one of six documents, it is seen.
+
+After each round, recompute the frontier. Answers open branches; that is the point of the round.
+
+### Sharpen the language as you go
+
+- **Challenge terms.** When the user's word conflicts with the glossary, or with the code's name for the same thing, raise it in the next round: "the glossary defines *loan* as X; you seem to mean Y — which?"
+- **Pin fuzzy words.** "Account" may be the member or the login; propose the precise term.
+- **Probe boundaries with concrete scenarios.** Invent the case that forces a choice: "a member with two holds returns a copy — which hold is served?" The answers become the spec's scenarios.
+- **Cross-check against the code.** "You said partial cancellation is possible; the code cancels whole orders. Which is right?"
+
+When a term resolves, write it into the glossary **at once**, in the format of `templates/glossary.md` — not in a batch at the end. Create the file lazily, when the first term resolves. The glossary holds vocabulary only: no behavior, no decisions, no implementation. Those belong in the spec documents.
+
+### When to stop
+
+When the frontier is empty: every branch visited, every decision answered or put to the user. There is no question budget — but if the tree is still widening after three or four rounds, the request is probably several features. Say so (see "Arguing back") rather than grilling all of them.
 
 ## Stage 3 — Propose the cut, and wait
 
-Output a compact proposal — readable in two minutes — and **stop for approval**. Do not write the story documents yet.
+Output a compact proposal — readable in two minutes — and **stop for approval**. Do not write the story documents yet. This is also where the user confirms you understood them: the first item is the one they should read hardest.
 
 Re-cutting here is free. Re-cutting after you have written twelve documents is not.
 
 The proposal contains, and nothing more:
 
-1. One paragraph on the feature as you now understand it.
+1. The feature as you now understand it: the problem, who has it, what they will observe once it is solved.
 2. The ordered story table: number, title, kind (feature/enabler), scope/layers, one line of objective, what it depends on.
-3. What you are deliberately leaving out, and assumptions you made instead of asking.
-4. Anything you think is wrong with the request (see "Arguing back").
+3. For each story with a UI in its scope, a **sketch of the interaction**: the screens or states in order, what the user does and what they see, in plain text or ASCII. Gherkin is hard to picture, and people validate what they can picture. It is not a design — no layout, no styling.
+4. What you are deliberately leaving out, and anything you decided without asking — expected to be empty after the grilling, and each entry needs its reason.
+5. Anything you think is wrong with the request (see "Arguing back").
 
 ### What makes a story a story
 
@@ -112,7 +146,7 @@ Numbering is **per feature folder**, starting at `US-01`. Never global across th
 
 Links in the documents are relative: a story links back to its feature as `../README.md`; the feature README links to a story as `US-NN-<slug>/US-NN-<slug>-spec.md`.
 
-Use `templates/spec.md` for each story and `templates/feature-readme.md` for the index. Write in the doc language set in the agent instructions, and include the conventions file's standing acceptance criteria in every story.
+Use `templates/spec.md` for each story and `templates/feature-readme.md` for the index. Write in the doc language set in the agent instructions, use the glossary's terms, and include the conventions file's standing acceptance criteria in every story. Every story starts with **Status** `draft`; only Stage 6 changes it.
 
 ### The section contract
 
@@ -144,6 +178,9 @@ Before handing back, verify each document:
 - [ ] Every scenario is falsifiable by a single observation, and that observation can be made by an automated test.
 - [ ] No scenario is restated in the acceptance criteria.
 - [ ] Failure and edge cases are covered, not just the happy path.
+- [ ] The scenarios together deliver the story's "so that": a reader who saw only these scenarios pass would believe the problem solved. If not, a scenario is missing or the story is mis-stated.
+- [ ] Every text the system's user reads — message, label, email — is written verbatim in a scenario.
+- [ ] Domain words are the glossary's, and each means the same thing in every document.
 - [ ] The story is verifiable alone, without the next one.
 - [ ] Context quotes real code or schema, with paths — nothing invented. Re-read anything you are unsure of.
 - [ ] Every interview decision and every assumption is recorded in the document, not just in this conversation.
@@ -151,4 +188,21 @@ Before handing back, verify each document:
 - [ ] The end-to-end verification can actually be performed with this project's tooling.
 - [ ] If a test level this feature needs is `missing`, the first story is the enabler that sets it up.
 
-Then report to the user: the files written, the story order, and what you need them to check hardest — the cut itself, and any assumption you made in place of a question.
+## Stage 6 — Gate 1: hand over a review digest, record the approval
+
+The documents exist; they are not approved. This is the human gate the whole pipeline rests on, and a person handed six documents of a hundred lines each reviews none of them closely. Give them a digest that tells them where to look.
+
+The digest goes in your message, not in a file: it is a view of the documents, and a file would be a second copy that goes stale. It contains:
+
+1. **The files written**, and the story order.
+2. **Decisions you made without the user** — gaps found while writing that the interview did not cover — each with a link to the section where it sits. Ideally none; each one is a question you still owe them, so ask it here with a recommendation, in the Stage 2 format.
+3. **Every text the system's user will read**, verbatim, grouped by story. Wording is what most often changes at the walkthrough, where changing it costs a test, the code and an amendment.
+4. **One line per story**: its "so that", and how many of its scenarios are failure or edge cases.
+5. **What to check hardest**: the places you are least sure the scenarios say what they meant.
+
+Then wait.
+
+- **Corrections**: edit the documents, re-run the Stage 5 checks on what changed, and hand over a digest of the changes only.
+- **Approval**: set **Status** to `approved — <YYYY-MM-DD>` in each story the user approved. They may approve some stories and not others; only an approved story can be planned.
+
+The plan skill refuses a story whose status is not `approved`. Never set it on your own judgement — the status records that a human read the spec, and nothing else in the pipeline records that.

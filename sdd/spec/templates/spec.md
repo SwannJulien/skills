@@ -5,6 +5,7 @@
 | | |
 |---|---|
 | **Feature** | <feature name> |
+| **Status** | draft \| approved — <YYYY-MM-DD, set only when the user approves> |
 | **Kind** | feature \| enabler |
 | **Depends on** | <US-NN, or — if independent> |
 | **Blocks** | <US-NN, or —> |

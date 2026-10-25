@@ -2,7 +2,7 @@
 
 Runs once per project, the first time any of the three skills is used. Its
 purpose is to keep project plumbing out of the interview: nothing recorded here
-should ever cost one of the ten questions again.
+should ever cost an interview question again.
 
 Two files carry what the three stages need, and nothing is recorded in both:
 
@@ -45,6 +45,7 @@ stages detect commands from the repo themselves and say what they guessed.
 | Field | Where to look |
 |---|---|
 | Specs root | an existing specs/stories/docs tree; otherwise propose `docs/specs/` |
+| Glossary | an existing `GLOSSARY.md`, ubiquitous-language or domain-terms document; otherwise propose `GLOSSARY.md` at the root, created when the first term resolves |
 | Layers | the project's manifests and the directory layout at the repo root |
 | Walkthrough interfaces | whatever a person uses to drive and inspect the system — a UI, a request collection, a CLI, a shell onto its storage |
 | Walkthrough setup | fixture files, seed scripts, test accounts named in docs |
@@ -75,6 +76,10 @@ must not be run — live in the project's agent instructions, not here.
   `README.md` and one folder per story `US-NN-<slug>/` with
   `US-NN-<slug>-spec.md` and `US-NN-<slug>-plan.md` inside
 - **Numbering**: per feature folder, from `US-01`
+- **Status**: every story is `draft` until the user approves it at gate 1;
+  plan refuses a story that is not `approved`
+- **Glossary**: `<path>` — the project's vocabulary. The spec interview writes
+  terms as they resolve; every stage uses them
 
 ## Layers
 

@@ -13,12 +13,14 @@ You write a plan document. **You write no code and you do not modify the spec.**
 
 The user names one (`US-03`, a path, "the next one"). If they don't, read the feature `README.md` (one level up from the story folders), find the first story whose acceptance criteria are not all ticked, and confirm that is the one before starting.
 
+Check the spec's **Status**. If it is not `approved`, say so and stop: gate 1 has not happened, and planning an unreviewed spec plans whatever the spec agent guessed. The user approves it through the spec skill, or by setting the status themselves.
+
 Plan exactly one story. Planning two at once produces a plan that only works if both are implemented together, which breaks the one property the spec was cut to have.
 
 ## Read, in this order
 
 1. **The project's agent instructions** (`CLAUDE.md` or `.claude/CLAUDE.md`, `AGENTS.md`) — how this project builds, verifies, migrates, its languages, and what must not be run without asking.
-2. **`.claude/spec/conventions.md`** — where specs live, the layers a story can name, and the test levels: which level proves what, where each lives, which are `missing`. If it is missing, the spec skill's bootstrap has not run; say so and stop.
+2. **`.claude/spec/conventions.md`** — where specs live, the layers a story can name, and the test levels: which level proves what, where each lives, which are `missing`. If it is missing, the spec skill's bootstrap has not run; say so and stop. Then the **glossary** it names, if any: name new identifiers after its terms, never after the words it lists under _Avoid_.
 3. **The spec**, whole. Its **Decisions and non-goals** section is binding: a rejected alternative is not yours to re-propose, and a stated non-goal is not yours to include. If you think a decision is wrong, say so to the user — do not quietly plan around it.
 4. **The feature `README.md`** — shared setup, feature-wide decisions, ordering.
 5. **`docs/map/`**, if it exists — the generated map per layer, which gives you the endpoints, tables and components this story touches and, in its seam columns, what else depends on them. Use it to find what you must read, and to find the callers a change will break. Check each map's first line: if the recorded commit is behind the sources it lists, treat that map as absent. Never cite a map where the plan needs a real path and line, and never edit one.

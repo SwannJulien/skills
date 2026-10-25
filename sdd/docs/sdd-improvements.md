@@ -230,6 +230,113 @@ project's own docs in the report, not only in Gaps.
 
 ---
 
+## Part 3 — Review of the skills as written (25 October 2026)
+
+A read of the four `SKILL.md` files against three questions: does the pipeline
+understand what the human needs, does it validate that with them, and does it
+build robust, well-architected features? Evidence is the skill text plus Parts 1
+and 2; the skills were not re-run for this review.
+
+Verdict: strong on **fidelity** (build what is written, and say honestly what
+was verified). Weaker at both ends: **discovery** (is what is written the right
+thing?) and **design** (is it built well, not just passing its tests?).
+
+The discovery half is already done (see the backlog): a grilling interview that
+starts from the problem, glossary terms written as they resolve, UI flow
+sketches in the proposal, a "so that" check in Stage 5, and a gate 1 review
+digest with a recorded `Status`. Everything below is **Proposed**.
+
+### 1. Architecture has no owner
+
+Spec is forbidden from discussing implementation. Plan makes the design choices,
+but its verdict escalates only an unmapped criterion, an unautomated scenario or
+a wrong spec (`plan/SKILL.md`, Finish). So a new table instead of a column, a
+new dependency, a changed public contract or an irreversible migration all get
+"Nothing needs you — run `/build`".
+
+**Proposed**: the plan's verdict also lists **significant design choices**, each
+with the alternative it rejected — anything hard to reverse, adding a
+dependency, or changing a contract outside the story. Those that are hard to
+reverse, surprising without context, and the result of a real trade-off become
+an ADR (the three gates from Matt Pocock's `domain-modeling`), offered to the
+user, not written silently.
+
+### 2. Design is optimised one story at a time
+
+Plan reads the feature `README.md` but not the specs of stories not yet built,
+and is told to plan exactly one story. US-01 can choose a data model US-04 then
+has to fight.
+
+**Proposed**: plan reads the unbuilt sibling specs and checks its design doesn't
+paint them into a corner, naming any tension in the verdict. Optionally, the
+first story's plan carries a short feature-level design note that later plans
+read.
+
+### 3. Non-functional requirements are never prompted
+
+Authorization, concurrency, idempotency, partial failure, data volume and
+backward compatibility appear only if the user raises them. "Every scenario is
+an automated test" pushes them further out. "Breaks existing behavior?" is the
+only hook in the template.
+
+**Proposed**: a short list of these concerns as branches of the spec's decision
+tree — put to the user only where the feature plausibly touches them — and a
+Stage 5 check that each one touched has a scenario or a stated non-goal.
+
+### 4. No review of the code's quality
+
+Build's only quality instruction is to follow the surrounding conventions.
+Passing tests is not the same as well-architected code.
+
+**Proposed**: before the report, build has the diff reviewed — a reviewer
+subagent, or the agent's code-review command where one exists — against the
+plan's design choices and the project's conventions, and reports what was
+found and fixed.
+
+### 5. The rules are on the honour system
+
+Part 2 §4 already shows boxes ticked from reading the code. Some rules can be
+mechanical cheaply:
+
+**Proposed**:
+- Hash the scenario test files after the red run and check they are unchanged
+  at green, which makes "the implementer may not edit tests" a fact.
+- A script that greps for `US-NN: <scenario title>` for every scenario in the
+  spec, used to tick the test criterion.
+- A Status check script shared by plan and build.
+
+### 6. The test-writer is less independent than it looks
+
+The test map's **Drives** column is the plan's interface design, and the
+test-writer is the same model with the same priors. That's an acceptable
+trade-off, but the README oversells it. Nothing limits how often the implementer
+can send a test back as a "test bug".
+
+**Proposed**: a test sent back twice, or any dispute about what a scenario
+means, goes to the human with the scenario quoted. The README describes the
+separation as independence from the route, not from the design.
+
+### 7. "The spec stays true after merge" contradicts the template
+
+The README says the spec stays true after merge. The Context section quotes the
+code "as it is today", which is false once the story is built.
+
+**Proposed**: Context records the commit it was quoted at and reads as
+historical. Alternatively, drop the claim from the README and say only that the
+spec's *behavior* stays true.
+
+### 8. No lightweight path
+
+Three sessions, a bootstrap and a 124-line template for a two-line change means
+people will skip the pipeline, and skipped runs are where drift comes from
+(Part 2, §4).
+
+**Proposed**: the spec skill says when not to use the pipeline, or offers a
+single-story mode — spec and plan in one document, one session — for changes
+under a stated size.
+
+---
+
 ## Backlog
 
 Recommended order. Tick when merged into the skills.
@@ -250,5 +357,16 @@ Recommended order. Tick when merged into the skills.
 - [ ] Plan exploration via subagent (Part 1, §4) — plan
 - [x] Automated tests per scenario, tests first (new) — spec, plan, build
   - Done 2026-10-25: bootstrap records test levels (missing harness → enabler story); plan writes a self-contained test map and lists existing tests the story changes (§7 `ApiAuthorizationMatrixTest`); build dispatches a test-writer from spec + test map only, checks red, implements without editing tests, runs the whole suite end-to-end included.
+- [x] Grilling interview and reviewable gate 1 (Part 3, intro) — spec, plan
+  - Done 2026-10-25: decision-tree rounds starting from the problem, each question with a recommendation "yes" accepts, no silent assumptions, no question cap; glossary written as terms resolve (`templates/glossary.md`, path in conventions); UI flow sketch in the proposal; Stage 5 checks "so that", verbatim texts and glossary terms; Stage 6 review digest and `Status: approved — <date>`, which plan requires.
+- [ ] Plan escalates design choices, ADRs offered (Part 3, §1) — plan
+- [ ] Plan reads unbuilt sibling specs (Part 3, §2) — plan
+- [ ] Non-functional branches in the decision tree (Part 3, §3) — spec
+- [ ] Code review before the build report (Part 3, §4) — build
+- [ ] Mechanical checks: test-file hash, scenario-name grep, Status check (Part 3, §5) — build, plan
+- [ ] Send-back limit, escalate scenario disputes (Part 3, §6) — build, README
+- [ ] Context stamped with its commit, or README claim fixed (Part 3, §7) — spec template, README
+- [ ] Lightweight path for small changes (Part 3, §8) — spec
 - [ ] Smaller items (Part 2, §7)
+  - Done 2026-10-25: interaction flow sketched in the proposal for front-end stories.
 - [ ] Optional: `/retro` skill to mine a project's sessions after each feature

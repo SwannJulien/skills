@@ -264,12 +264,17 @@ ones.
 
 ```
 /spec "add multi-library support"
-    → reads the code, asks up to 10 questions
-    → proposes a cut into stories, and stops
+    → reads the code, then grills you in rounds: the problem first,
+      each question with a recommended answer "yes" accepts
+    → writes resolved terms into the glossary as they settle
+    → proposes a cut into stories, with a sketch of each UI flow, and stops
   you: approve or re-cut
-    → writes one document per story
+    → writes one document per story, status draft
+    → hands over a review digest: unasked decisions, every user-facing
+      text verbatim, what to check hardest
 
-  you: read the spec, correct, validate             ← gate 1: the behavior
+  you: read the digest and the specs, correct, approve   ← gate 1: the behavior
+    → status approved; plan refuses a story that isn't
 
 /plan US-01                 (clean context)
     → writes US-01-…-plan.md beside the spec, in the story's folder
@@ -300,6 +305,22 @@ checkboxes, an end-to-end verification walkthrough, and the traps to watch for.
 
 ### Design decisions
 
+**The interview grills the need, not just the cut.** It walks a decision tree
+from the root — who has the problem, what they do today, what they will observe
+once it is solved — asking every question whose prerequisites are settled in one
+round, each with a recommended answer. Facts come from the code, never from you;
+decisions come from you, never from a silent assumption. Resolved terms go into
+the project's glossary as they settle, so every document and every stage uses
+one word for one thing. After Matt Pocock's
+[grilling and domain-modeling](https://github.com/mattpocock/skills) skills,
+built in rather than invoked so the writing half cannot be skipped.
+
+**Gate 1 is made reviewable, and recorded.** The spec stage ends with a digest
+rather than a list of files: the decisions it made without you, every text the
+system's user will read, and where it is least sure. Each story carries a
+`Status`; only your approval sets it to `approved`, and plan refuses anything
+else.
+
 **A story is "independently verifiable and shippable", not "touches every
 layer."** A layer quota makes the agent pad backend stories with UI work to
 qualify. The story records the layers it honestly touches.
@@ -311,7 +332,8 @@ four — more than that means the cut is wrong.
 
 **The cut is approved before the documents are written.** Re-cutting a proposal
 is free; re-cutting twelve finished documents is not, and a human asked to review
-twelve documents at once reviews none of them.
+twelve documents at once reviews none of them. A story with a UI comes with a
+plain-text sketch of its flow, because people validate what they can picture.
 
 **One job per section.** Scenarios hold all the behavior. Acceptance criteria
 hold everything that isn't behavior. The end-to-end walkthrough replays the
