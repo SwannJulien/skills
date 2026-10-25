@@ -254,12 +254,11 @@ how a walkthrough is performed, the criteria every story carries. Commit it: all
 three skills read it, and it is what keeps project plumbing out of the interview.
 
 Everything else the skills need — languages, build/test/lint commands, how the
-app runs, migrations, what must not be run without asking — comes from the
+app runs, how to reset its state, what must not be run without asking — comes from the
 project's `CLAUDE.md`, because any agent doing any task needs it too, not just
-these three skills. The first run checks `CLAUDE.md` covers it and proposes the
-missing sections. If you are writing one from scratch,
-[`sdd/spec/templates/claude-md.md`](sdd/spec/templates/claude-md.md) lists what
-belongs in it and why.
+these three skills. The first run checks `CLAUDE.md` states the handful of facts
+the stages rely on, whatever shape the file has, and proposes only the missing
+ones.
 
 ### How it works
 

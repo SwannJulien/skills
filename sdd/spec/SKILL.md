@@ -134,7 +134,7 @@ Rules that follow from it:
 - **Every scenario becomes an automated test**, so the observation must be one a test can make: a status code, a row in a table, a text on the screen, a message on a queue. Write text the user reads verbatim. A judgement only a human can make — "looks right", "feels fast" — is not a scenario; it belongs in the end-to-end verification.
 - **Scenarios cover failure and edge cases**, not just the happy path. A spec with only happy paths is a wish.
 - **No behavior in the acceptance criteria.** If a criterion would make sense as Given/When/Then, it is a scenario in the wrong section. The criteria are the done-checklist: error types, response codes, where the code lives, "the HTTP collection has a file for this endpoint", "lint passes".
-- **The end-to-end verification is derived from the scenarios, not a third copy of them.** It replays them as one sequence through real interfaces — the UI where there is one, otherwise the project's HTTP collection and database shell. Include the setup (fixtures, accounts) and the cleanup.
+- **The end-to-end verification is derived from the scenarios, not a third copy of them.** It replays them as one sequence through real interfaces — the ones listed in `.claude/spec/conventions.md`, preferring what the system's own user would use. Include the setup (fixtures, accounts) and the cleanup.
 - **Write acceptance criteria as `- [ ]` checkboxes.** Stage 3 ticks them; they are the completion signal for the whole pipeline.
 
 ## Stage 5 — Check your own work

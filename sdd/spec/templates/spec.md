@@ -109,7 +109,7 @@ Replays the scenarios as a single sequence — it does not restate them.>
 
 1. <action> → <what you should see>
 2. <action> → <what you should see>
-3. <verification through the database or the HTTP collection where the UI can't show it>
+3. <verification through a lower-level interface where the user's one can't show it>
 
 **Cleanup**: <how to undo the setup>
 

@@ -8,7 +8,7 @@ Two files carry what the three stages need, and nothing is recorded in both:
 
 | File | Holds | Owner |
 |---|---|---|
-| The project's agent instructions (`CLAUDE.md` or `.claude/CLAUDE.md`, `AGENTS.md`) | languages, build/test/lint commands, how the app runs, schema changes, commands that need permission, hazards | the user — every agent and every task reads it |
+| The project's agent instructions (`CLAUDE.md` or `.claude/CLAUDE.md`, `AGENTS.md`) | the facts in Step 1, in whatever shape the project already uses | the user — every agent and every task reads it |
 | `.claude/spec/conventions.md` | where specs live, the layers a story can name, which test level proves what, how a walkthrough is performed, criteria every story carries | this skill — only spec, plan and build read it |
 
 The test for where a fact goes: **would an agent fixing a bug with no spec need
@@ -16,26 +16,28 @@ it?** If yes, it belongs in the agent instructions.
 
 ## Step 1 — Check the agent instructions
 
-Read the project's agent instructions and check they cover what the stages rely
-on:
+Read the project's agent instructions and check they state the facts the
+stages rely on. This is a list of facts, not of sections: the project's file
+can hold them however it likes, and a fact that does not apply to this project
+— there is no lint, nothing has state — is simply absent, not a gap.
 
-| Fact | Where to look if it is missing |
+| Fact | Why the stages need it |
 |---|---|
-| Doc language and code language | existing docs under `docs/`, `README.md`, identifiers and commit messages |
-| Test commands — one per level the project has (unit, integration, end-to-end), and how to run a single test | build and package manifests, task runners, `Makefile`, CI workflow files |
-| Lint command | same places |
-| How the app runs | `docker-compose.yml`, `README.md`, run configurations |
-| Database access and migrations | `docker-compose.yml`, container names, migration tool and directory |
-| Commands that need permission | formatters that rewrite untouched files, browser installs, anything destructive |
+| The language documents are written in, if not English | spec and plan write documents; agents default to English |
+| How to build, lint and test — per test level, and how to run a single test | build verifies by running these, not by reading its diff |
+| How to run the system, and what must be running first | end-to-end tests and the walkthrough drive the running system |
+| How to put the system's state back to a known starting point, if it has any | every end-to-end test and walkthrough starts from it |
+| How that state's shape is changed safely, if the project has rules about it | stories that change it must follow them |
+| What must not be run without asking | build runs commands unattended |
 
-For each missing fact, detect what you can from the repo. Then **propose** an
-addition to the agent instructions, using the matching sections of
-`templates/claude-md.md`, and apply it only with approval — it is their
-instruction file, not yours. Ask about what you could not detect, above all
-**how the app is run**, since that shapes every end-to-end walkthrough.
+For each missing fact, detect what you can from the repo — manifests, task
+runners, CI workflows, README, run configurations — and ask about the rest,
+above all **how the system is run**, since that shapes every end-to-end test.
+Then **propose** the addition, written in the style of the existing file, and
+apply it only with approval: it is their instruction file, not yours.
 
-If there are no agent instructions at all, offer to create `CLAUDE.md` from
-`templates/claude-md.md`. If the user declines either offer, carry on: later
+If there are no agent instructions at all, offer to create a minimal file
+holding only these facts. If the user declines either offer, carry on: later
 stages detect commands from the repo themselves and say what they guessed.
 
 ## Step 2 — Detect the spec conventions
@@ -43,8 +45,8 @@ stages detect commands from the repo themselves and say what they guessed.
 | Field | Where to look |
 |---|---|
 | Specs root | an existing specs/stories/docs tree; otherwise propose `docs/specs/` |
-| Layers | `package.json`, `pom.xml`, `go.mod`, `Cargo.toml`, directory layout at the repo root |
-| Walkthrough interfaces | a UI, `*.bru`, `*.http`, `*.rest`, Postman/Insomnia exports, a database shell |
+| Layers | the project's manifests and the directory layout at the repo root |
+| Walkthrough interfaces | whatever a person uses to drive and inspect the system — a UI, a request collection, a CLI, a shell onto its storage |
 | Walkthrough setup | fixture files, seed scripts, test accounts named in docs |
 | Test levels | existing test directories and their naming, test-runner configuration, browser-automation configuration, which levels CI runs |
 | End-to-end harness | what drives the app from outside — a browser-automation tool for a UI, an HTTP client for an API, the binary itself for a CLI — and what must be running first |
@@ -84,11 +86,13 @@ with the directory each lives in.>
 Every scenario in a spec becomes at least one automated test. Commands are in
 the agent instructions; this section says which level proves what.
 
+<One row per level this project has or needs, from the smallest to
+end-to-end. The names are the project's own.>
+
 | Level | Proves | Lives in | Harness |
 |---|---|---|---|
-| unit | <logic in isolation> | `<dir, naming pattern>` | <tool, or `missing`> |
-| integration | <a layer through its real interface, e.g. the API against a real database> | `<dir>` | <tool, or `missing`> |
-| end-to-end | <the system from outside, as a user drives it> | `<dir>` | <tool, or `missing`> |
+| <name> | <what a test at this level can observe> | `<dir, naming pattern>` | <tool, or `missing`> |
+| end-to-end | <the system from outside, as its user drives it> | `<dir>` | <tool, or `missing`> |
 
 - **End-to-end setup**: <what must be running, and the data the tests start
   from; how to start it is in the agent instructions>
@@ -98,7 +102,7 @@ the agent instructions; this section says which level proves what.
 ## End-to-end walkthrough
 
 - **Interfaces**: <what a walkthrough goes through, in order of preference —
-  the UI, the HTTP collection at `<path>`, the database shell>
+  e.g. the UI, a request collection at `<path>`, a shell onto its storage>
 - **Setup**: <the accounts and data a walkthrough starts from; how to load
   them is in the agent instructions>
 

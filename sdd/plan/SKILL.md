@@ -51,7 +51,7 @@ Build hands this section, and only this section, to a separate test-writer agent
 
 For each scenario in the spec, one row:
 
-- **Level** — the cheapest level that can make the scenario's observation through the interface the scenario names. What a user sees on screen is end-to-end; a response code is integration; a computed value is unit. Use the levels in `.claude/spec/conventions.md`, nothing else.
+- **Level** — the cheapest level that can make the scenario's observation through the interface the scenario names. What the system's user observes from outside is end-to-end; anything lower goes to the smallest level in `.claude/spec/conventions.md` that can see it. Use those levels, nothing else.
 - **Test file** — a real path, following the project's existing layout and naming.
 - **Drives** — the entry point the test calls: an endpoint and method, a route and the elements it uses, a public function's signature. Real identifiers. Where a step creates the entry point, give it exactly as the step will create it; the test-writer codes against that and the test fails until the step lands.
 - **Setup** — the fixtures, accounts and state it starts from, naming existing helpers where they exist.
