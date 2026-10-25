@@ -1,4 +1,4 @@
-<!-- map: <name> | sha: <commit this was generated at> | sources: <globs from .map/conventions.md> -->
+<!-- map: <name> | sha: <commit this was generated at> | sources: <globs from .claude/map/conventions.md> -->
 
 # Map — <Layer>
 

@@ -1,4 +1,4 @@
-<!-- map: front | sha: <commit this was generated at> | sources: <globs from .map/conventions.md> -->
+<!-- map: front | sha: <commit this was generated at> | sources: <globs from .claude/map/conventions.md> -->
 
 # Map — Front end
 

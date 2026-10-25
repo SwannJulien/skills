@@ -121,13 +121,14 @@ docs/map/
   api.md             endpoints → auth → contract → handler → tables → called from
   front.md           routes + components → state owned → calls → used by
   deploy.md          environments, pipeline, and where every config value comes from
-.map/conventions.md  the map set, source globs, introspection commands
+.claude/map/
+  conventions.md     the map set, source globs, introspection commands
 ```
 
 ### Setup
 
 Install `map/` as described in [Installing a skill](#installing-a-skill). The
-first run writes `.map/conventions.md` — which maps this project gets, the globs
+first run writes `.claude/map/conventions.md` — which maps this project gets, the globs
 each is derived from, and the commands that produce a schema or route listing
 mechanically. Commit it, along with `docs/map/` itself: the committed maps are
 the baseline the next run diffs against.
@@ -225,7 +226,7 @@ plan, a third builds it. Project-agnostic.
 |---|---|---|---|
 | 1 | `spec` | `README.md` + `US-NN-*-spec.md` | the repo + you |
 | 2 | `plan` | `US-NN-*-plan.md` | one spec + the repo |
-| 3 | `build` | code | one spec + its plan |
+| 3 | `build` | tests, then code | one spec + its plan |
 
 One folder per feature, one folder per story inside it, so everything about a
 story sits in a single directory:
@@ -248,9 +249,17 @@ required to record its own decisions and the alternatives it rejected.
 
 Install all three as described in [Installing a skill](#installing-a-skill);
 they are meant to be used together. The first run in a new project writes
-`.spec/conventions.md` at its root — where specs live, how the project is built,
-tested and migrated, what must not be run without asking. Commit it: all three
-skills read it, and it is what keeps project plumbing out of the interview.
+`.claude/spec/conventions.md` — where specs live, the layers a story can name,
+how a walkthrough is performed, the criteria every story carries. Commit it: all
+three skills read it, and it is what keeps project plumbing out of the interview.
+
+Everything else the skills need — languages, build/test/lint commands, how the
+app runs, migrations, what must not be run without asking — comes from the
+project's `CLAUDE.md`, because any agent doing any task needs it too, not just
+these three skills. The first run checks `CLAUDE.md` covers it and proposes the
+missing sections. If you are writing one from scratch,
+[`sdd/spec/templates/claude-md.md`](sdd/spec/templates/claude-md.md) lists what
+belongs in it and why.
 
 ### How it works
 
@@ -268,7 +277,9 @@ skills read it, and it is what keeps project plumbing out of the interview.
     → ends with "nothing needs you" or what you must decide first
 
 /build US-01                (clean context)
-    → builds it, ticks the acceptance criteria, runs what it can of the walkthrough
+    → a test-writer agent turns each scenario into a test; all fail
+    → builds it until they pass, without editing them
+    → runs every test level, ticks the criteria, runs what it can of the walkthrough
 
   you: perform the walkthrough, report each point   ← gate 2: the result
     → each point is fixed as a bug, or proposed as a spec amendment
@@ -316,6 +327,18 @@ planning gets flagged for promotion into the spec's "Watch out for".
 **Checkboxes are the handoff protocol.** `- [ ]` → `- [x]` in the spec is the
 only edit the implementer may make to it, and the only mechanical completion
 signal in the pipeline.
+
+**Every scenario becomes an automated test, written before the code by a
+different agent.** The plan maps each scenario to a test level, a file, and the
+entry point it drives. A test-writer agent gets the spec and that map — never
+the plan's steps — and writes tests that must fail first. The implementer makes
+them pass and may not edit them: a test changed until it passes is a spec
+rewritten to match the code. Tests written by the agent that wrote the code
+test what it built, not what was asked. Every story with a UI gets an
+end-to-end test. The skills prescribe no stack: the first run records the
+project's test levels, and a missing harness becomes the first story of the
+next feature. The walkthrough stays: the tests prove the code does what the
+spec says; the walkthrough is where you find out the spec says what you meant.
 
 **The spec is written once and amended only by a human.** If implementation shows
 the spec is wrong, the stage stops and reports. A spec edited to match the code

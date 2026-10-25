@@ -49,7 +49,7 @@ The goal is not to stop reading files. It is to never derive the same fact twice
 
 - **Always-loaded instruction files** — `CLAUDE.md`/`AGENTS.md`, Kiro steering
   files, Spec Kit `constitution.md`. Stable rules. We have this:
-  `CLAUDE.md` + `.spec/conventions.md`.
+  `CLAUDE.md` + `.claude/spec/conventions.md`.
 - **Memory bank** (Cline): prose files the agent reads at start and rewrites at
   end. Easy, but the prose drifts from the code — nothing ties it to a commit.
 - **Context packed into the handoff** (BMAD story files, Spec Kit plan/tasks):
@@ -74,7 +74,7 @@ conversation.
 
 | Layer | File | Holds | Written by | Freshness |
 |---|---|---|---|---|
-| Project rules | `CLAUDE.md`, `.spec/conventions.md` | how to run, verify, migrate; forbidden commands | human, bootstrap | rarely changes |
+| Project rules | `CLAUDE.md`, `.claude/spec/conventions.md` | how to run, verify, migrate; forbidden commands | human, bootstrap | rarely changes |
 | Structure | `docs/map/*` | what exists, what connects to what | `/map` | sha per map; refreshed at end of build |
 | Feature memory (**new**) | `<feature>/NOTES.md` | durable facts and traps found while working, with evidence | plan and build append; human prunes | each entry dated, with a code pointer |
 | Story handoff | `US-NN-plan.md` | the context packed for one story | plan | disposable after build |
@@ -248,5 +248,7 @@ Recommended order. Tick when merged into the skills.
 - [ ] Dirty-tree handling, no live state, doc contradictions in report (Part 2, §5) — map
 - [ ] Conventions as single source for layout, format version, gitignore check (Part 2, §6) — spec bootstrap
 - [ ] Plan exploration via subagent (Part 1, §4) — plan
+- [x] Automated tests per scenario, tests first (new) — spec, plan, build
+  - Done 2026-10-25: bootstrap records test levels (missing harness → enabler story); plan writes a self-contained test map and lists existing tests the story changes (§7 `ApiAuthorizationMatrixTest`); build dispatches a test-writer from spec + test map only, checks red, implements without editing tests, runs the whole suite end-to-end included.
 - [ ] Smaller items (Part 2, §7)
 - [ ] Optional: `/retro` skill to mine a project's sessions after each feature

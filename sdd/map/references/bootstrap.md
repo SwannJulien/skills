@@ -1,4 +1,4 @@
-# Bootstrapping `.map/conventions.md`
+# Bootstrapping `.claude/map/conventions.md`
 
 Runs once per project, the first time `/map` is used. It decides **which maps
 exist**, **what each one is derived from**, and **which commands produce it

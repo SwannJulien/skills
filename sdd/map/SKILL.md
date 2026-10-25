@@ -18,14 +18,14 @@ The user reads the change report. The maps are the reference they consult when t
 
 | Invocation | Situation | What you do |
 |---|---|---|
-| `/map`, no `.map/` yet | first run in a project | bootstrap conventions, get approval, generate every map, offer the `CLAUDE.md` pointer |
+| `/map`, no `.claude/map/` yet | first run in a project | bootstrap conventions, get approval, generate every map, offer the `CLAUDE.md` pointer |
 | `/map` | before a PR | regenerate only the maps whose sources moved, re-transpose the seams, report the delta, offer the PR body |
 | `/map db`, `/map api front` | after manual surgery, or a map you distrust | regenerate the named maps unconditionally |
 | `/map check` | anytime | report staleness per map and stop — **write nothing** |
 
 ## Stage 0 — Conventions
 
-Read `.map/conventions.md` from the repo root.
+Read `.claude/map/conventions.md` from the repo root.
 
 If it is missing, bootstrap it: follow `references/bootstrap.md`, write the file, show the user the proposed map set, and **wait for approval** before generating anything. This happens once per project. A wrong map set discovered after four full generations is an expensive thing to fix.
 
@@ -62,7 +62,7 @@ Dispatch all regenerating maps in a single message, one `general-purpose` subage
 
 Each subagent's brief must contain all of this — it starts cold and sees none of this conversation:
 
-1. **The map name**, its source globs, and the introspection commands from `.map/conventions.md` (`pg_dump -s`, an OpenAPI dump, a route-listing command).
+1. **The map name**, its source globs, and the introspection commands from `.claude/map/conventions.md` (`pg_dump -s`, an OpenAPI dump, a route-listing command).
 2. **The template to follow**, by absolute path: `templates/<map>.md`, or `templates/generic.md` for a project-specific map. The output must match its structure, section order and column order exactly.
 3. **The output path**, and the previous version's path if one exists.
 4. **The determinism rules** and **the honesty rules** below, verbatim or by reference.
@@ -133,14 +133,14 @@ it was generated at; if that is behind on the sources it lists, trust the code.
 Regenerate with `/map`. Never hand-edit a map.
 ```
 
-Then tell the user to commit `docs/map/` and `.map/conventions.md`. The maps are committed on purpose: they are the baseline the next run diffs against, and the context a cold agent reads. If they would rather gitignore them, say plainly that the pre-PR diff stops working and the skill loses most of its point.
+Then tell the user to commit `docs/map/` and `.claude/map/conventions.md`. The maps are committed on purpose: they are the baseline the next run diffs against, and the context a cold agent reads. If they would rather gitignore them, say plainly that the pre-PR diff stops working and the skill loses most of its point.
 
 ## The rules the orchestrator keeps
 
 - **You write no application code.** Not a fix, not a rename, not a tidy-up, however obvious. A map run that also edits the project is a map run the user cannot trust to be read-only.
 - **Maps are generated-only.** If you find hand-written prose in one, do not silently destroy it: tell the user which file and which section, and that durable knowledge belongs in a `Why` cell (which survives) or in their notes (`/add-note`) — not in a file the next run overwrites.
-- **Ask before running anything that touches a live system.** Introspection commands come from `.map/conventions.md`; if one needs a database that must be started, or credentials, ask rather than start it.
-- **Split a map that outgrows one file.** Past roughly 250 rows, `api.md` becomes `api/` with a `README.md` index plus one file per domain. Record the split and its grouping in `.map/conventions.md` so it is stable on the next run; a grouping that is re-decided every time is a diff that is never readable.
+- **Ask before running anything that touches a live system.** Introspection commands come from `.claude/map/conventions.md`; if one needs a database that must be started, or credentials, ask rather than start it.
+- **Split a map that outgrows one file.** Past roughly 250 rows, `api.md` becomes `api/` with a `README.md` index plus one file per domain. Record the split and its grouping in `.claude/map/conventions.md` so it is stable on the next run; a grouping that is re-decided every time is a diff that is never readable.
 
 ## Finish
 

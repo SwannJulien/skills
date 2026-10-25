@@ -32,7 +32,7 @@ large and best read one feature section at a time.>
 
 ## What these maps do not cover
 
-<!-- Copied from `.map/conventions.md`. A reader who assumes completeness will
+<!-- Copied from `.claude/map/conventions.md`. A reader who assumes completeness will
      be wrong about something, and this is the cheapest place to prevent it. -->
 
 - <part of the system that is deliberately unmapped, and where it is documented instead>
@@ -45,5 +45,5 @@ large and best read one feature section at a time.>
 /map check    # report staleness, write nothing
 ```
 
-Configuration lives in [`.map/conventions.md`](../../.map/conventions.md): the
+Configuration lives in [`.claude/map/conventions.md`](../../.claude/map/conventions.md): the
 map set, the source globs, the introspection commands.

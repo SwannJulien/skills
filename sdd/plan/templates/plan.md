@@ -13,6 +13,28 @@ implementer from rediscovering it.>
 
 ---
 
+## Test map
+
+<Self-contained: build hands this section alone to the test-writer, who never
+reads the steps. One row per spec scenario.>
+
+| Scenario | Level | Test file | Drives | Setup |
+|---|---|---|---|---|
+| <scenario title, verbatim> | unit \| integration \| end-to-end | `<path>` | <endpoint + method, route + elements, or function signature> | <fixtures, accounts, existing helpers> |
+
+### Existing tests this story changes
+
+| Test | Asserts today | Superseded by |
+|---|---|---|
+| `<path>` — <test name> | <old behavior> | <scenario title> |
+
+### Not automated
+
+<Scenarios no test can observe with this project's harness, and why. "None" is
+the expected answer.>
+
+---
+
 ## Steps
 
 <Ordered. Each step leaves the project in a state that compiles.>

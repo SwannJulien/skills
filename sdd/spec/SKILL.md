@@ -11,7 +11,7 @@ First stage of a three-stage pipeline. Each stage hands off through a document, 
 |---|---|---|---|
 | 1 | `spec` (this one) | `README.md` + `US-NN-*-spec.md` | the repo + the user |
 | 2 | `plan` | `US-NN-*-plan.md` | one spec + the repo |
-| 3 | `build` | code | one spec + its plan |
+| 3 | `build` | tests, then code | one spec + its plan |
 
 Everything stage 2 and 3 need must be **in the documents**. They never see this conversation. A decision you make here that isn't written down will be re-litigated later, or silently reversed.
 
@@ -19,9 +19,9 @@ Your job ends at the specification. **Write no code, plan no implementation, nam
 
 ## Stage 0 — Conventions
 
-Read `.spec/conventions.md` from the repo root.
+Read `.claude/spec/conventions.md` — where specs live, the layers a story can name, how a walkthrough is performed — and the project's agent instructions (`CLAUDE.md` or `.claude/CLAUDE.md`, `AGENTS.md`) for languages, commands and hazards.
 
-If it is missing, bootstrap it: follow `references/bootstrap.md`, write the file, show the user a summary, and ask them to confirm before continuing. This happens once per project. Do not spend interview questions on things that belong in this file.
+If the conventions file is missing, bootstrap it: follow `references/bootstrap.md`, which also checks the agent instructions cover what the three stages need. Write the file, show the user a summary, and ask them to confirm before continuing. This happens once per project. Do not spend interview questions on things that belong in either file.
 
 ## Stage 1 — Research before asking anything
 
@@ -36,7 +36,7 @@ Find out, at minimum:
 - Which files, tables, endpoints and components this feature touches, and what they currently do.
 - What already exists that the user may not realise exists (half-built, or built and broken).
 - The project's own documented rules and hazards (`CLAUDE.md`, `AGENTS.md`, `docs/`, ADRs). These constrain the spec and belong in it.
-- How the thing is verified today (per `.spec/conventions.md`).
+- How the thing is verified today: the test levels and harnesses in `.claude/spec/conventions.md`, the existing tests that cover what this feature touches, and the walkthrough interfaces.
 
 Read the actual code, not just file names. The best specs quote the code that is wrong; the worst paraphrase it from a distance.
 
@@ -79,6 +79,8 @@ Two kinds of story are allowed:
 
 Budget: if more than about one story in four is an enabler, the cut is wrong. Fold the infrastructure into the first story that needs it and re-propose.
 
+One enabler sits outside the budget: **a missing test harness.** If `.claude/spec/conventions.md` marks a test level `missing` and this feature's scenarios need it — any story with a UI or an externally driven interface needs end-to-end — the first story sets that harness up. Its verification is one passing test through it, run by the project's own command. It is paid once per project, not per feature; afterwards update the level in the conventions file.
+
 Order the stories so each is shippable when its turn comes. Prefer a thin end-to-end story first over a "build all the plumbing" story.
 
 ### Arguing back
@@ -93,7 +95,7 @@ Say it once, plainly, with the evidence. If the user reaffirms the original requ
 
 ## Stage 4 — Write the documents
 
-Only after approval. Write into the location given by `.spec/conventions.md`:
+Only after approval. Write into the location given by `.claude/spec/conventions.md`:
 
 ```
 <specs-root>/FEAT-<feature-slug>/
@@ -110,7 +112,7 @@ Numbering is **per feature folder**, starting at `US-01`. Never global across th
 
 Links in the documents are relative: a story links back to its feature as `../README.md`; the feature README links to a story as `US-NN-<slug>/US-NN-<slug>-spec.md`.
 
-Use `templates/spec.md` for each story and `templates/feature-readme.md` for the index. Write in the language set in `.spec/conventions.md`.
+Use `templates/spec.md` for each story and `templates/feature-readme.md` for the index. Write in the doc language set in the agent instructions, and include the conventions file's standing acceptance criteria in every story.
 
 ### The section contract
 
@@ -129,6 +131,7 @@ Each section has exactly one job. The whole value of this format is that nothing
 Rules that follow from it:
 
 - **A scenario must be falsifiable by a single observation.** "The system is secure" is not a scenario. "A librarian from another library gets 403" is.
+- **Every scenario becomes an automated test**, so the observation must be one a test can make: a status code, a row in a table, a text on the screen, a message on a queue. Write text the user reads verbatim. A judgement only a human can make — "looks right", "feels fast" — is not a scenario; it belongs in the end-to-end verification.
 - **Scenarios cover failure and edge cases**, not just the happy path. A spec with only happy paths is a wish.
 - **No behavior in the acceptance criteria.** If a criterion would make sense as Given/When/Then, it is a scenario in the wrong section. The criteria are the done-checklist: error types, response codes, where the code lives, "the HTTP collection has a file for this endpoint", "lint passes".
 - **The end-to-end verification is derived from the scenarios, not a third copy of them.** It replays them as one sequence through real interfaces — the UI where there is one, otherwise the project's HTTP collection and database shell. Include the setup (fixtures, accounts) and the cleanup.
@@ -138,7 +141,7 @@ Rules that follow from it:
 
 Before handing back, verify each document:
 
-- [ ] Every scenario is falsifiable by a single observation.
+- [ ] Every scenario is falsifiable by a single observation, and that observation can be made by an automated test.
 - [ ] No scenario is restated in the acceptance criteria.
 - [ ] Failure and edge cases are covered, not just the happy path.
 - [ ] The story is verifiable alone, without the next one.
@@ -146,5 +149,6 @@ Before handing back, verify each document:
 - [ ] Every interview decision and every assumption is recorded in the document, not just in this conversation.
 - [ ] No implementation plan, no new code, no invented file paths.
 - [ ] The end-to-end verification can actually be performed with this project's tooling.
+- [ ] If a test level this feature needs is `missing`, the first story is the enabler that sets it up.
 
 Then report to the user: the files written, the story order, and what you need them to check hardest — the cut itself, and any assumption you made in place of a question.
