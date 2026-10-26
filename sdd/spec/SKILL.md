@@ -30,10 +30,6 @@ If the conventions file is missing, bootstrap it: follow `references/bootstrap.m
 
 Read the code first. Every question you ask that the repo could have answered burns the user's patience and teaches them to skim your output — and skimmed output defeats the human gate this whole pipeline rests on.
 
-**Start from `docs/map/` if it exists.** The `map` skill keeps a generated document per layer — schema, endpoints, components, deployment — where every entity names what it reaches and what reaches it. Reading the relevant maps first tells you in one pass which tables, endpoints and components this feature touches, and it is the fastest way to notice something already exists. Then read the actual code for the parts that matter.
-
-Each map's first line records the commit it was generated at and the globs it covers. **If it is behind on those globs, treat the map as absent and read the code.** A stale map is a confident wrong answer, which is worse than no answer. Never edit a map, and never cite one in a spec in place of the code it describes.
-
 Find out, at minimum:
 
 - Which files, tables, endpoints and components this feature touches, and what they currently do.
