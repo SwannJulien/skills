@@ -1,15 +1,15 @@
 # Bootstrapping `.claude/spec/conventions.md`
 
-Runs once per project, the first time any of the three skills is used. Its
+Runs once per project, the first time any of the pipeline's skills is used. Its
 purpose is to keep project plumbing out of the interview: nothing recorded here
 should ever cost an interview question again.
 
-Two files carry what the three stages need, and nothing is recorded in both:
+Two files carry what the four stages need, and nothing is recorded in both:
 
 | File | Holds | Owner |
 |---|---|---|
 | The project's agent instructions (`CLAUDE.md` or `.claude/CLAUDE.md`, `AGENTS.md`) | the facts in Step 1, in whatever shape the project already uses | the user — every agent and every task reads it |
-| `.claude/spec/conventions.md` | where specs live, the layers a story can name, which test level proves what, how a walkthrough is performed, criteria every story carries | this skill — only spec, plan and build read it |
+| `.claude/spec/conventions.md` | where specs live, the layers a story can name, which test level proves what, how a walkthrough is performed, criteria every story carries | this skill — only spec, plan, build and review read it |
 
 The test for where a fact goes: **would an agent fixing a bug with no spec need
 it?** If yes, it belongs in the agent instructions.

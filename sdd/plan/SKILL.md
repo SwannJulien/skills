@@ -5,7 +5,7 @@ description: Write an implementation plan for one already-approved user story sp
 
 # Plan
 
-Second stage of a three-stage pipeline. Stage 1 (`spec`) produced a specification the human has read and approved. You turn **one** story into an ordered implementation plan. Stage 3 (`build`) executes it.
+Second stage of a four-stage pipeline. Stage 1 (`spec`) produced a specification the human has read and approved. You turn **one** story into an ordered implementation plan. Stage 3 (`build`) executes it.
 
 You write a plan document — and an ADR, only when the user accepts one you drafted. **You write no code and you do not modify the spec.**
 

@@ -1,11 +1,11 @@
 ---
 name: build
-description: Implement one user story from its approved specification (a US-NN-*-spec.md document) and its plan, then tick off its acceptance criteria and run its end-to-end verification. Use when the user wants a specced and planned story built ("build US-03", "implement this story", "/build"). Third stage of spec-driven development — has a separate agent write failing tests from the spec's scenarios, writes the code that makes them pass without touching them, runs the whole suite end-to-end included, reports which criteria it could not verify, then handles the user's walkthrough feedback and closes the story out when they confirm it ("walkthrough OK", "step 2 of US-03 isn't right"). Not for compiling or running the project, and not for feature work that has no spec.
+description: Implement one user story from its approved specification (a US-NN-*-spec.md document) and its plan, then tick off its acceptance criteria and run its end-to-end verification. Use when the user wants a specced and planned story built ("build US-03", "implement this story", "/build"). Third stage of spec-driven development — has a separate agent write failing tests from the spec's scenarios, writes the code that makes them pass without touching them, runs the whole suite end-to-end included, reports which criteria it could not verify, then answers the review's findings ("fix the review of US-03"), handles the user's walkthrough feedback and closes the story out when they confirm it ("walkthrough OK", "step 2 of US-03 isn't right"). Not for compiling or running the project, and not for feature work that has no spec.
 ---
 
 # Build
 
-Third stage of a three-stage pipeline. The specification is approved, the plan is written. A separate agent turns the scenarios into failing tests; you make them pass, verify the rest, and report honestly on what you could not verify.
+Third stage of a four-stage pipeline. The specification is approved, the plan is written. A separate agent turns the scenarios into failing tests; you make them pass, verify the rest, and report honestly on what you could not verify. Stage 4 (`review`) then checks your work from a clean context, and you answer its findings before the user's walkthrough.
 
 Two agents on purpose. Tests written by the agent that writes the code test what it built, not what was asked. The test-writer sees the spec and the plan's test map, never the steps, so its tests encode the spec.
 
@@ -13,7 +13,7 @@ Two agents on purpose. Tests written by the agent that writes the code test what
 
 The user names one. If they don't, read the feature `README.md` and take the first story whose acceptance criteria are not all ticked — then confirm before writing anything.
 
-Each story lives in its own folder under the feature: `FEAT-<feature-slug>/US-NN-<slug>/`, holding `US-NN-<slug>-spec.md` and `US-NN-<slug>-plan.md`. If the plan is missing, stage 2 has not run — say so and stop.
+Each story lives in its own folder under the feature: `FEAT-<feature-slug>/US-NN-<slug>/`, holding `US-NN-<slug>-spec.md` and `US-NN-<slug>-plan.md`. If the plan is missing, stage 2 has not run — say so and stop. If a `US-NN-<slug>-review.md` sits beside them with open findings, this run answers it — go to "After the review".
 
 One story per run. The stories were cut to be shippable alone; implementing two at once forfeits that.
 
@@ -89,6 +89,8 @@ Leave unticked anything you could not verify, and say why in your report. An unt
 
 **2. The end-to-end verification walkthrough.** Perform it, in order, as written. Where it needs something you cannot do — a browser you must not install, a service you must not start, a click only a human can make — do every step you can, then stop and tell the user exactly which step they need to perform and what they should see.
 
+Record what each step you performed actually produced — the response, the screen, the row — next to what the step says you should see. Your run is not the user's walkthrough and never stands in for it: they judge whether what was observed is what they meant, and they can only judge what you show them.
+
 Run the project's lint and every level of its tests, end-to-end included, from the agent instructions — the whole suite, not only this story's tests: a story that breaks another story's scenario is not done. If a level the test map needs has no harness, the spec should have opened with an enabler for it; say so, and say which scenarios the verification therefore rests on the walkthrough alone.
 
 ## Report
@@ -96,16 +98,30 @@ Run the project's lint and every level of its tests, end-to-end included, from t
 - What you built, and any step where you departed from the plan and why.
 - The scenario tests per level, how each failed before the code, any sent back to the test-writer and why.
 - Criteria ticked, criteria left unticked and why.
-- How far you got through the end-to-end walkthrough, and the exact steps left for the user.
+- How far you got through the end-to-end walkthrough: each step you performed with what it produced, and the exact steps left for the user.
 - Lint and test output — including failures, with the output. Never report a story as done over a failing check.
 - Anything you noticed and deliberately left alone.
 - Anything you believe is wrong in the spec.
 
 State completion plainly when it is true and verified. When it isn't, say which part isn't, without hedging the rest.
 
+End by pointing at the next step: **run `/review US-NN` in a clean context**, then the walkthrough. Don't offer to close the story out yet.
+
+## After the review
+
+Review writes `US-NN-<slug>-review.md` beside the spec and fixes nothing; its findings are yours to answer. Read it whole, then take every **blocking** and **should fix** finding in order:
+
+- **A weak test** — a scenario's test that does not assert what the scenario says. Send the scenario, the finding and the test to the test-writer to strengthen it; watch it fail; then fix the code if it fails for the behavior.
+- **Anything else in the code** — fix it as in "Build it", and re-verify every criterion the fix could touch. A criterion review unticked is ticked again only once you have established it holds.
+- **A finding you believe is wrong** — don't fix it. Mark it disputed, with your reason and the evidence. You don't get to win the argument: the next review round judges it, and a dispute it still holds goes to the user.
+
+Notes and spec problems are the user's, not yours — leave them.
+
+Fill each finding's **Status** in the review document — `fixed`, or `disputed — <reason>` — and edit nothing else in it. Run lint and the whole suite again, then report: each finding with what you did, the suite output, and the next step — `/review US-NN` again while any blocking finding was fixed or disputed, otherwise the user's walkthrough.
+
 ## After the user's walkthrough
 
-The report is not the end of the story. The user now performs the walkthrough themselves — it is their acceptance test — and comes back with one of two things: feedback on a step, or a confirmation that it all works.
+The report is not the end of the story. Once review says the story is ready, the user performs the walkthrough themselves — it is their acceptance test — and comes back with one of two things: feedback on a step, or a confirmation that it all works.
 
 ### Feedback on a step
 
@@ -135,4 +151,4 @@ When the user says the walkthrough passed, close the story out — without being
 1. Re-verify **every** acceptance criterion, including those you ticked before the walkthrough: code changed since then. Untick any that no longer hold; tick those that were waiting on the user's steps, now that you have their observed result.
 2. Run lint and the whole test suite again, end-to-end included.
 3. Report: criteria ticked, any left unticked and why, lint and test output, amendments made and the stories they affect.
-4. If everything holds, say the story is done and offer to commit it. Never commit without being asked.
+4. If everything holds, say the story is done and offer to commit it. Never commit without being asked. If walkthrough feedback changed more than a line or two of code, offer `/review US-NN` first: those changes are unreviewed.

@@ -8,7 +8,7 @@ In this repository you'll find the skills I have developed and I'm using in my p
   2. [/add-note](#add-note)
   3. [/line-by-line](#line-by-line)
   4. [/map](#map)
-  5. [/spec, /plan, /build](#spec-plan-build)
+  5. [/spec, /plan, /build, /review](#spec-plan-build-review)
 
 ## Installing a skill
 
@@ -214,19 +214,20 @@ that is behind on its own sources as absent — a stale map is a confident wrong
 answer, which is worse than none.
 
 
-## /spec, /plan, /build
+## /spec, /plan, /build, /review
 
 ### Purpose
 
-Spec-driven development in three stages, with a human gate between each. One
-skill writes the specification, a second turns one story into an implementation
-plan, a third builds it. Project-agnostic.
+Spec-driven development in four stages, with two human gates. One skill writes
+the specification, a second turns one story into an implementation plan, a
+third builds it, a fourth reviews the build before you try it. Project-agnostic.
 
 | Stage | Skill | Writes | Reads |
 |---|---|---|---|
 | 1 | `spec` | `README.md` + `US-NN-*-spec.md` | the repo + you |
 | 2 | `plan` | `US-NN-*-plan.md` | one spec + the repo |
 | 3 | `build` | tests, then code | one spec + its plan |
+| 4 | `review` | `US-NN-*-review.md` | one spec + its plan + the diff |
 
 One folder per feature, one folder per story inside it, so everything about a
 story sits in a single directory:
@@ -237,6 +238,7 @@ docs/specs/FEAT-multi-library/
   US-01-library-scoped-reads/
     US-01-library-scoped-reads-spec.md
     US-01-library-scoped-reads-plan.md
+    US-01-library-scoped-reads-review.md
   US-02-librarian-invitations/
     US-02-librarian-invitations-spec.md
 ```
@@ -247,16 +249,16 @@ required to record its own decisions and the alternatives it rejected.
 
 ### Setup
 
-Install all three as described in [Installing a skill](#installing-a-skill);
+Install all four as described in [Installing a skill](#installing-a-skill);
 they are meant to be used together. The first run in a new project writes
 `.claude/spec/conventions.md` — where specs live, the layers a story can name,
 how a walkthrough is performed, the criteria every story carries. Commit it: all
-three skills read it, and it is what keeps project plumbing out of the interview.
+four skills read it, and it is what keeps project plumbing out of the interview.
 
 Everything else the skills need — languages, build/test/lint commands, how the
 app runs, how to reset its state, what must not be run without asking — comes from the
 project's `CLAUDE.md`, because any agent doing any task needs it too, not just
-these three skills. The first run checks `CLAUDE.md` states the handful of facts
+these four skills. The first run checks `CLAUDE.md` states the handful of facts
 the stages rely on, whatever shape the file has, and proposes only the missing
 ones.
 
@@ -283,7 +285,18 @@ ones.
 /build US-01                (clean context)
     → a test-writer agent turns each scenario into a test; all fail
     → builds it until they pass, without editing them
-    → runs every test level, ticks the criteria, runs what it can of the walkthrough
+    → runs every test level, ticks the criteria, runs what it can of the
+      walkthrough and records what each step produced
+
+/review US-01               (clean context)
+    → reruns the suite, re-checks every ticked criterion, unticks what doesn't hold
+    → reads each scenario's test against the scenario, the diff against the
+      spec's decisions, the plan's design choices and the project's rules
+    → writes US-01-…-review.md; fixes nothing
+    → ends with "ready for your walkthrough" or "back to build"
+
+/build US-01                (answers the review, if anything is blocking)
+    → fixes each finding, or disputes it with a reason; /review again
 
   you: perform the walkthrough, report each point   ← gate 2: the result
     → each point is fixed as a bug, or proposed as a spec amendment
@@ -375,6 +388,19 @@ end-to-end test. The skills prescribe no stack: the first run records the
 project's test levels, and a missing harness becomes the first story of the
 next feature. The walkthrough stays: the tests prove the code does what the
 spec says; the walkthrough is where you find out the spec says what you meant.
+
+**The build is reviewed by an agent that didn't write it, before you try it.**
+Build ticks its own checkboxes, and an agent judging its own work judges what it
+built — the reason tests come from a separate agent applies to the ticks too.
+Review starts cold with the spec, the plan and the diff, never build's reasoning
+or report. It reruns the suite, unticks any criterion that doesn't hold, and
+checks what tests can't: that each scenario's test asserts every outcome the
+scenario names, that no non-goal was built, that design choices the plan didn't
+list didn't slip in. It writes findings and fixes nothing — a reviewer that
+fixes is a second implementer. Build answers each finding, or disputes it with a
+reason; a dispute review still holds goes to you. Review comes before the
+walkthrough so your time goes on code already checked against the spec — and it
+never replaces the walkthrough, because every agent takes the spec as the truth.
 
 **The spec is written once and amended only by a human.** If implementation shows
 the spec is wrong, the stage stops and reports. A spec edited to match the code

@@ -5,15 +5,16 @@ description: Write specifications for a feature as a set of independently verifi
 
 # Spec
 
-First stage of a three-stage pipeline. Each stage hands off through a document, not through context:
+First stage of a four-stage pipeline. Each stage hands off through a document, not through context:
 
 | Stage | Skill | Writes | Reads |
 |---|---|---|---|
 | 1 | `spec` (this one) | `README.md` + `US-NN-*-spec.md`, glossary terms | the repo + the user |
 | 2 | `plan` | `US-NN-*-plan.md` | one spec + the repo |
 | 3 | `build` | tests, then code | one spec + its plan |
+| 4 | `review` | `US-NN-*-review.md` | one spec + its plan + the diff |
 
-Everything stage 2 and 3 need must be **in the documents**. They never see this conversation. A decision you make here that isn't written down will be re-litigated later, or silently reversed.
+Everything stages 2 to 4 need must be **in the documents**. They never see this conversation. A decision you make here that isn't written down will be re-litigated later, or silently reversed.
 
 Your job ends at the specification. **Write no code, plan no implementation, name no file you intend to create.** Describing *what the system does* is the work; describing *how to build it* is stage 2's and it is actively harmful here — it turns the human's review of behavior into a review of code.
 
@@ -54,28 +55,35 @@ Map the interview as a **decision tree**: every decision branches into the decis
 
 Then the branches the problem opens: roles, scope boundaries, what happens on failure, what is explicitly out, and the words the user uses for things.
 
-**Facts are yours; decisions are theirs.** Anything the repo can answer, look up — in a subagent if your agent can dispatch one, so the round is not blocked: only the questions that depend on that fact wait for it. Never ask the user what the code says. What the system should do is theirs: put each such decision to them. Implementation choices are neither's here — they belong to plan, so don't ask about them.
+**Facts are yours; decisions are theirs.** Anything the repo can answer, look up — in a subagent if your agent can dispatch one, so the interview is not blocked: only the questions that depend on that fact wait for it. Never ask the user what the code says. What the system should do is theirs: put each such decision to them. Implementation choices are neither's here — they belong to plan, so don't ask about them.
 
-### Rounds
+### One question at a time
 
-The **frontier** is every open decision whose prerequisites are settled. Ask the whole frontier in one round, numbered, then wait. A question whose answer depends on another question still open in this round belongs to the next one.
+This is an interview, not a questionnaire. Ask **one question**, wait for the answer, and let it choose the next question. A list of ten questions gets ten short answers. One question gets a real answer, and that answer often makes the next three questions pointless.
+
+The **frontier** is every open decision whose prerequisites are settled. Pick the next question from it, closest to the root first: the problem, then what follows from it. Of two questions at the same depth, ask the one whose answer would change more of the tree. After each answer, recompute the frontier. When an answer surprises you, follow it up before moving on.
+
+Questions come in two kinds. Say which kind each one is by how you ask it:
+
+- **Open: the user knows something you don't.** Who has the problem, what they do today, what a good outcome looks like, why they asked for this, what an example case is. You cannot recommend an answer to these, so don't invent one. Ask them to describe or explain, and leave room for a long answer. Most questions about the root are open.
+- **Closed: a choice between options you can name.** Give the options and what you found in the code that bears on them, then your recommendation and its reason. Accepting it should take one word, but picking another option or explaining something else should be just as easy. You have read the code, and they are relying on your recommendation.
 
 ```
-**Q1 — <title>**: <the question, with the options where there are some, and
-what you found in the code that bears on it>
+**<title>**: <the question; for a closed one, the options and what the code
+says about them>
 
-➡️ <your recommended answer>
+➡️ <closed only: your recommended answer, and why>
 ```
 
-Word each question so "yes" accepts your recommendation, and tell the user once that "yes to all except Q3: …" works. You have read the code; they are relying on your recommendation.
+If your agent has a structured question tool with selectable options, use it for closed questions and always leave a free-text answer available. Ask open questions in plain text.
 
-**Nothing is silently assumed.** Where you would have assumed, ask with a recommendation instead: a "yes" costs the user about what reading a written assumption costs, and unlike an assumption buried in one of six documents, it is seen.
+**Nothing is silently assumed.** Where you would have assumed, ask a closed question with a recommendation instead. Accepting it costs the user about what reading a written assumption costs, and unlike an assumption buried in one of six documents, the user sees it.
 
-After each round, recompute the frontier. Answers open branches; that is the point of the round.
+Keep it moving. If the answer to a closed question is obvious from what the user has already said, state it and move on ("you said X, so I'm taking Y; tell me if not"). That is a recorded assumption they can correct, not a silent one. If the user tells you to go with your recommendations for the rest, list what you took and move to Stage 3.
 
 ### Sharpen the language as you go
 
-- **Challenge terms.** When the user's word conflicts with the glossary, or with the code's name for the same thing, raise it in the next round: "the glossary defines *loan* as X; you seem to mean Y — which?"
+- **Challenge terms.** When the user's word conflicts with the glossary, or with the code's name for the same thing, make it your next question: "the glossary defines *loan* as X; you seem to mean Y — which?"
 - **Pin fuzzy words.** "Account" may be the member or the login; propose the precise term.
 - **Probe boundaries with concrete scenarios.** Invent the case that forces a choice: "a member with two holds returns a copy — which hold is served?" The answers become the spec's scenarios.
 - **Cross-check against the code.** "You said partial cancellation is possible; the code cancels whole orders. Which is right?"
@@ -84,7 +92,7 @@ When a term resolves, write it into the glossary **at once**, in the format of `
 
 ### When to stop
 
-When the frontier is empty: every branch visited, every decision answered or put to the user. There is no question budget — but if the tree is still widening after three or four rounds, the request is probably several features. Say so (see "Arguing back") rather than grilling all of them.
+When the frontier is empty: every branch visited, every decision answered or put to the user. There is no question budget. But if the tree keeps widening long after the root is settled, the request is probably several features. Say so (see "Arguing back") rather than grilling all of them.
 
 ## Stage 3 — Propose the cut, and wait
 
@@ -195,7 +203,7 @@ The documents exist; they are not approved. This is the human gate the whole pip
 The digest goes in your message, not in a file: it is a view of the documents, and a file would be a second copy that goes stale. It contains:
 
 1. **The files written**, and the story order.
-2. **Decisions you made without the user** — gaps found while writing that the interview did not cover — each with a link to the section where it sits. Ideally none; each one is a question you still owe them, so ask it here with a recommendation, in the Stage 2 format.
+2. **Decisions you made without the user** — gaps found while writing that the interview did not cover — each with a link to the section where it sits. Ideally none; each one is a question you still owe them, so list them here, then ask them one at a time after the digest, with a recommendation, in the Stage 2 format.
 3. **Every text the system's user will read**, verbatim, grouped by story. Wording is what most often changes at the walkthrough, where changing it costs a test, the code and an amendment.
 4. **One line per story**: its "so that", and how many of its scenarios are failure or edge cases.
 5. **What to check hardest**: the places you are least sure the scenarios say what they meant.

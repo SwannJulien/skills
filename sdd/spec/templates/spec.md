@@ -51,7 +51,7 @@ matter. If the current behavior is wrong, show it rather than describing it.>
 
 ## Decisions and non-goals
 
-<Choices made while specifying, and what was rejected. Stages 2 and 3 never see
+<Choices made while specifying, and what was rejected. Later stages never see
 the conversation this came out of — if a rejected alternative isn't written here,
 it will be proposed again.>
 
