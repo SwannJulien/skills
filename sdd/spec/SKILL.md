@@ -14,6 +14,8 @@ First stage of a four-stage pipeline. Each stage hands off through a document, n
 | 3 | `build` | tests, then code | one spec + its plan |
 | 4 | `review` | `US-NN-*-review.md` | one spec + its plan + the diff |
 
+Stages 2 to 4 also append to the feature's `NOTES.md`: durable facts about the code they found, one per entry with a pointer, so no later stage derives the same fact twice. Every stage reads it; agents only append to it, and the human deletes entries that stop being true.
+
 Everything stages 2 to 4 need must be **in the documents**. They never see this conversation. A decision you make here that isn't written down will be re-litigated later, or silently reversed.
 
 Your job ends at the specification. **Write no code, plan no implementation, name no file you intend to create.** Describing *what the system does* is the work; describing *how to build it* is stage 2's and it is actively harmful here — it turns the human's review of behavior into a review of code.
@@ -35,7 +37,8 @@ Find out, at minimum:
 - Which files, tables, endpoints and components this feature touches, and what they currently do.
 - What already exists that the user may not realise exists (half-built, or built and broken).
 - The project's own documented rules and hazards (`CLAUDE.md`, `AGENTS.md`, `docs/`, ADRs). These constrain the spec and belong in it. But on what the system is and how it is built — structure, naming, existing behavior — the code is the source of truth: where a document's description disagrees with it, quote the code in Context and report the contradiction to the user. A document's explicit requirements — a *must* or *never*, a stated constraint, a declared migration — still constrain the spec, even where the code falls short of them.
-- How the thing is verified today: the test levels and harnesses in `.claude/spec/conventions.md`, the existing tests that cover what this feature touches, and the walkthrough interfaces.
+- When you are adding to or amending a feature that already has stories, its `NOTES.md`: what plan, build and review found in this code. An entry that bears on a new story belongs in that story's Context or **Watch out for**, quoted with its pointer.
+- How the thing is verified today: the test levels and harnesses in `.claude/spec/conventions.md`, the existing tests that cover what this feature touches, and the walkthrough interface.
 
 Read the actual code, not just file names. The best specs quote the code that is wrong; the worst paraphrase it from a distance.
 
@@ -136,17 +139,18 @@ Say it once, plainly, with the evidence. If the user reaffirms the original requ
 Only after approval. Write into the location given by `.claude/spec/conventions.md`:
 
 ```
-<specs-root>/FEAT-<feature-slug>/
+<specs-root>/FEATNN_<feature-slug>/
   README.md                        # feature overview + ordered story table
+  NOTES.md                         # appended by plan, build and review; not yours to write
   US-01-<slug>/
     US-01-<slug>-spec.md
   US-02-<slug>/
     US-02-<slug>-spec.md
 ```
 
-The feature folder is always prefixed `FEAT-`. Each story gets **its own folder**, named `US-NN-<slug>`, holding `US-NN-<slug>-spec.md` — stage 2 drops `US-NN-<slug>-plan.md` in beside it, so everything about one story lives in one directory.
+The feature folder is always named `FEATNN_<feature-slug>`: `NN` is the next feature number — list the folders under the specs root, take the highest `FEAT` number and add one (`FEAT01` when there are none). Never reuse a number, even if that feature's folder was removed. Each story gets **its own folder**, named `US-NN-<slug>`, holding `US-NN-<slug>-spec.md` — stage 2 drops `US-NN-<slug>-plan.md` in beside it, so everything about one story lives in one directory.
 
-Numbering is **per feature folder**, starting at `US-01`. Never global across the project — concurrent features would collide.
+Story numbering is **per feature folder**, starting at `US-01`. Never global across the project — concurrent features would collide.
 
 Links in the documents are relative: a story links back to its feature as `../README.md`; the feature README links to a story as `US-NN-<slug>/US-NN-<slug>-spec.md`.
 
@@ -172,7 +176,7 @@ Rules that follow from it:
 - **Every scenario becomes an automated test**, so the observation must be one a test can make: a status code, a row in a table, a text on the screen, a message on a queue. Write text the user reads verbatim. A judgement only a human can make — "looks right", "feels fast" — is not a scenario; it belongs in the end-to-end verification.
 - **Scenarios cover failure and edge cases**, not just the happy path. A spec with only happy paths is a wish.
 - **No behavior in the acceptance criteria.** If a criterion would make sense as Given/When/Then, it is a scenario in the wrong section. The criteria are the done-checklist: error types, response codes, where the code lives, "the HTTP collection has a file for this endpoint", "lint passes".
-- **The end-to-end verification is derived from the scenarios, not a third copy of them.** It replays them as one sequence through real interfaces — the ones listed in `.claude/spec/conventions.md`, preferring what the system's own user would use. Include the setup (fixtures, accounts) and the cleanup.
+- **The end-to-end verification is derived from the scenarios, not a third copy of them.** It replays them as one sequence in the interface the story's user uses — the UI when there is one, the API or CLI when that is what the user drives — as listed in `.claude/spec/conventions.md`. It is the user's acceptance test: it answers "is this what I meant?", which only using the system can. Every step is something the story's user could do; a database shell or request tool never observes an outcome unless it is that user's own interface. An outcome the user's interface cannot show is the job of a scenario's test, not of the walkthrough; if the story has no outcome that interface can show yet, the story is cut wrong. Include the setup (fixtures, accounts) and the cleanup, done with the project's own commands — setup is the one place lower-level tools belong.
 - **Write acceptance criteria as `- [ ]` checkboxes.** Stage 3 ticks them; they are the completion signal for the whole pipeline.
 
 ## Stage 5 — Check your own work
@@ -190,6 +194,7 @@ Before handing back, verify each document:
 - [ ] Every interview decision and every assumption is recorded in the document, not just in this conversation.
 - [ ] No implementation plan, no new code, no invented file paths.
 - [ ] The end-to-end verification can actually be performed with this project's tooling.
+- [ ] Every walkthrough step is something the story's user could do; none goes through storage or a request tool unless that is the user's own interface.
 - [ ] If a test level this feature needs is `missing`, the first story is the enabler that sets it up.
 
 ## Stage 6 — Gate 1: hand over a review digest, record the approval

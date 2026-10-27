@@ -7,7 +7,7 @@ description: Write an implementation plan for one already-approved user story sp
 
 Second stage of a four-stage pipeline. Stage 1 (`spec`) produced a specification the human has read and approved. You turn **one** story into an ordered implementation plan. Stage 3 (`build`) executes it.
 
-You write a plan document — and an ADR, only when the user accepts one you drafted. **You write no code and you do not modify the spec.**
+You write a plan document, append to the feature's notes — and an ADR, only when the user accepts one you drafted. **You write no code and you do not modify the spec.**
 
 ## Which story
 
@@ -21,13 +21,14 @@ Plan exactly one story. Planning two at once produces a plan that only works if 
 
 1. **The project's agent instructions** (`CLAUDE.md` or `.claude/CLAUDE.md`, `AGENTS.md`) — how this project builds, verifies, migrates, its languages, and what must not be run without asking.
 2. **`.claude/spec/conventions.md`** — where specs live, the layers a story can name, and the test levels: which level proves what, where each lives, which are `missing`. If it is missing, the spec skill's bootstrap has not run; say so and stop. Then the **glossary** it names, if any: write the plan's prose in its terms. Identifiers keep the code's existing names for existing concepts — an entry's _In code_ line maps one to the other — and take the glossary's term only for a concept the code does not name yet.
-3. **The spec**, whole. Its **Decisions and non-goals** section is binding: a rejected alternative is not yours to re-propose, and a stated non-goal is not yours to include. If you think a decision is wrong, say so to the user — do not quietly plan around it.
-4. **The feature `README.md`** — shared setup, feature-wide decisions, ordering.
-5. **The specs of this feature's stories not yet built** — their Scope, Decisions and Scenarios. You plan one story, but its design must not paint the next ones into a corner: a data model a later scenario cannot fit, a contract a later story must break. Read them to judge this story's choices, never to plan their work.
-6. **The code**, properly. Read every file you intend to touch, not just its name. The plan's value is that it is written against the code as it actually is.
-7. **The tests** that cover what this story changes — search them for the endpoints, components, functions and messages the spec's scenarios change. A test asserting the old behavior will fail once the story is built, correctly; the plan must say so before it surprises anyone. Read the helpers and fixtures the existing tests use, too: the new tests should use them.
+3. **The feature's `NOTES.md`**, beside its `README.md`, if it exists — facts and traps earlier stages found in this code, each with a pointer. Check an entry against its pointer before relying on it; one the code now contradicts, report rather than plan around.
+4. **The spec**, whole. Its **Decisions and non-goals** section is binding: a rejected alternative is not yours to re-propose, and a stated non-goal is not yours to include. If you think a decision is wrong, say so to the user — do not quietly plan around it.
+5. **The feature `README.md`** — shared setup, feature-wide decisions, ordering.
+6. **The specs of this feature's stories not yet built** — their Scope, Decisions and Scenarios. You plan one story, but its design must not paint the next ones into a corner: a data model a later scenario cannot fit, a contract a later story must break. Read them to judge this story's choices, never to plan their work.
+7. **The code**, properly. Read every file you intend to touch, not just its name. The plan's value is that it is written against the code as it actually is.
+8. **The tests** that cover what this story changes — search them for the endpoints, components, functions and messages the spec's scenarios change. A test asserting the old behavior will fail once the story is built, correctly; the plan must say so before it surprises anyone. Read the helpers and fixtures the existing tests use, too: the new tests should use them.
 
-**The code is the source of truth for how things are done here** — coding style, naming, structure, patterns. The agent instructions, ADRs, the glossary, the maps and the conventions file mostly *describe* the code, and descriptions go stale: where a description disagrees with the code, plan to the code and report the disagreement, so the human corrects the document. Three limits:
+**The code is the source of truth for how things are done here** — coding style, naming, structure, patterns. The agent instructions, ADRs, the glossary, the maps, the notes and the conventions file mostly *describe* the code, and descriptions go stale: where a description disagrees with the code, plan to the code and report the disagreement, so the human corrects the document. Three limits:
 
 - **A document's explicit requirements still bind** — a *must* or *never*, a stated constraint, a declared migration ("new code uses B"), what must not be run. The code cannot contradict a requirement, only fall short of it: code that does is debt to report, not an example to follow.
 - **A defect is never a pattern.** If the nearest pattern is a security or correctness problem — a query built by concatenation, a swallowed exception — don't copy it: plan the correct version and report the existing one.
@@ -42,7 +43,7 @@ The spec is self-sufficient by design — you were never meant to see the conver
 Write to `<story-dir>/US-NN-<slug>-plan.md` using `templates/plan.md`, in the doc language set in the agent instructions — beside the spec, inside the story's own folder:
 
 ```
-<specs-root>/FEAT-<feature-slug>/US-NN-<slug>/
+<specs-root>/FEATNN_<feature-slug>/US-NN-<slug>/
   US-NN-<slug>-spec.md     # stage 1, yours to read, never to edit
   US-NN-<slug>-plan.md     # this document
 ```
@@ -77,7 +78,7 @@ Build hands this section, and only this section, to a separate test-writer agent
 For each scenario in the spec, one row:
 
 - **Level** — the cheapest level that can make the scenario's observation through the interface the scenario names. What the system's user observes from outside is end-to-end; anything lower goes to the smallest level in `.claude/spec/conventions.md` that can see it. Use those levels, nothing else.
-- **Test file** — a real path, following the project's existing layout and naming.
+- **Test file** — a real path, following the project's existing layout and naming. Name it after what it tests — the feature, the user journey, the page, the module — never after the story: stories close, the behavior stays, and later stories will change it. Prefer the existing file for that area; open a new one only for an area no file covers. The test's name carries the story ID, so the file doesn't need to.
 - **Drives** — the entry point the test calls: an endpoint and method, a route and the elements it uses, a public function's signature. Real identifiers. Where a step creates the entry point, give it exactly as the step will create it; the test-writer codes against that and the test fails until the step lands.
 - **Setup** — the fixtures, accounts and state it starts from, naming existing helpers where they exist.
 
@@ -107,17 +108,23 @@ Keep going for everything that doesn't depend on the problem — deliver the res
 
 ### Knowledge that outlives the plan
 
-The plan is disposable; it starts going stale the moment the first file is edited. But some of what you discover is durable — a trap that will still be a trap in a year, the reason an obvious approach is wrong.
+The plan is disposable; it starts going stale the moment the first file is edited. But some of what you discover is durable — a fact about the code a later story would otherwise rediscover, a trap that will still be a trap in a year, the reason an obvious approach is wrong.
 
-Collect that under **To promote into the spec** at the end of the plan, as a suggestion for the human to move into the spec's **Watch out for** section. You may not edit the spec yourself. Flagging it is how it survives the plan's deletion.
+Append each one to the feature's `NOTES.md`, beside its `README.md` — create the file with the first entry, headed `# <Feature name> — notes`. One fact per entry:
+
+```markdown
+- **<The fact, stated plainly>**
+  `<path and identifier that show it>`.
+  Found: plan US-NN, <YYYY-MM-DD>. Affects: <what a later story would trip on>.
+```
+
+The pointer is required: it is how the next reader checks the fact still holds. Read the file before appending and don't repeat an entry. Never edit or delete one, even one the code now contradicts — report it; pruning is the human's. What does not belong: behavior (the spec), vocabulary (the glossary), this story's route (the plan), a design choice (**Design choices**, or an ADR).
 
 ## Finish
 
-Report: the plan path, the step count, the test count per level, the existing tests this story will change, any scenario left unautomated and why, any acceptance criterion you could not map to a step, the design choices and what they mean for later stories, anything you flagged for promotion, and anything in the spec you believe is wrong.
+Report: the plan path, the step count, the test count per level, the existing tests this story will change, any scenario left unautomated and why, any acceptance criterion you could not map to a step, the design choices and what they mean for later stories, the entries you appended to `NOTES.md` and any existing entry the code contradicts, and anything in the spec you believe is wrong.
 
 The user may never open the plan — agreeing on the spec is their gate, the route is yours. So anything that needs them must be in this report, not only in the document. End with exactly one of:
 
 - **Nothing needs you — run `/build`.** Only when no criterion is unmapped, no scenario is left unautomated, nothing in the spec is wrong, and there are no design choices.
 - **Before building, you need to:** a short numbered list. Each item is a spec amendment, or a decision the user must make, with why building without it would go wrong. Put each design choice to them as a question with your recommendation, worded so "yes" accepts it — and, where you drafted an ADR, whether to record it. Most are a "yes"; the point is that they are seen before the code makes them expensive.
-
-Items for promotion into **Watch out for** never block the build. List them under the verdict as optional.

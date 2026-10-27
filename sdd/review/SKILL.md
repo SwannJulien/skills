@@ -9,7 +9,7 @@ Fourth stage of a four-stage pipeline. Build has made the scenario tests pass, t
 
 A fresh agent on purpose. Build ticks its own boxes, and an agent that wrote the code judges what it built, not what was asked — the same reason build has a separate test-writer. You see the spec, the plan and the code, never build's reasoning or its report, so what you find is what the documents and the code show.
 
-Your job is to find, not to fix. **You change no code, no test, no plan.** The one edit you may make to the spec is unticking a box you have shown to be false — never ticking one. Everything else goes into the review document, and build applies it.
+Your job is to find, not to fix. **You change no code, no test, no plan.** The one edit you may make to the spec is unticking a box you have shown to be false — never ticking one. Everything else goes into the review document, and build applies it — except a durable fact about the code, which you append to the feature's notes like any other stage (see "Write the review").
 
 The review checks the code against the spec. It does not check the spec against what the user wanted: that is the walkthrough, and nothing here replaces it.
 
@@ -17,7 +17,7 @@ The review checks the code against the spec. It does not check the spec against 
 
 The user names one. If they don't, read the feature `README.md` and take the first story that has a plan, ticked criteria and no review document, or a review document with open findings — then confirm before starting.
 
-Each story lives in `FEAT-<feature-slug>/US-NN-<slug>/`, beside `US-NN-<slug>-spec.md` and `US-NN-<slug>-plan.md`. You write `US-NN-<slug>-review.md` there. If the plan is missing, or no criterion is ticked and no scenario test exists, build has not run — say so and stop.
+Each story lives in `FEATNN_<feature-slug>/US-NN-<slug>/`, beside `US-NN-<slug>-spec.md` and `US-NN-<slug>-plan.md`. You write `US-NN-<slug>-review.md` there. If the plan is missing, or no criterion is ticked and no scenario test exists, build has not run — say so and stop.
 
 ## What the story changed
 
@@ -29,10 +29,11 @@ Attribute every changed file to the story or not, from the spec's **Scope**, the
 
 1. **The project's agent instructions** (`CLAUDE.md` or `.claude/CLAUDE.md`, `AGENTS.md`) — lint and test commands, how the app runs, house rules, and the commands that must not be run without asking. Respect that last list.
 2. **`.claude/spec/conventions.md`** — the test levels, and the glossary it names.
-3. **The spec**, whole. Its criteria, scenarios and **Decisions and non-goals** are what you judge against.
-4. **The plan** — its **Design choices**, test map and steps. It tells you what build was meant to do, so you can see where it didn't and whether it said so.
-5. **The diff**, and around every hunk, enough of the file to judge it against the code next to it.
-6. **The previous review document**, if one exists — see "A second round".
+3. **The feature's `NOTES.md`**, beside its `README.md`, if it exists — facts and traps earlier stages found in this code, each with a pointer.
+4. **The spec**, whole. Its criteria, scenarios and **Decisions and non-goals** are what you judge against.
+5. **The plan** — its **Design choices**, test map and steps. It tells you what build was meant to do, so you can see where it didn't and whether it said so.
+6. **The diff**, and around every hunk, enough of the file to judge it against the code next to it.
+7. **The previous review document**, if one exists — see "A second round".
 
 ## Check
 
@@ -70,7 +71,7 @@ A weak test is a blocking finding against the test, not the code: build sends it
 
 The code is the source of truth for how things are done here. Judge the diff against the code next to it — naming, structure, error handling, idiom — and against the agent instructions where they *require* something. A description that disagrees with the code is a note for the human, not a finding against the story.
 
-Look hardest for what the tests can't see: security and correctness defects, an error swallowed, a query built from input, a migration that can't be undone, a command the agent instructions say must not be run. A defect copied from the code next door is still a defect.
+Look hardest for what the tests can't see: security and correctness defects, an error swallowed, a query built from input, a migration that can't be undone, a command the agent instructions say must not be run. A defect copied from the code next door is still a defect. So is walking into a trap the feature's `NOTES.md` records.
 
 If your agent has a code-review command, you may run it on the story's files as an extra pass; its findings go through the same classification below.
 
@@ -95,6 +96,8 @@ Hold the line on what counts. A preference is not a finding; "I would have writt
 
 Use `templates/review.md`, in the doc language set in the agent instructions. It records the diff it reviewed — base commit, and whether the tree was dirty — the criteria you unticked, the suite output, and the findings by kind.
 
+A durable fact about the code you established while checking — one a later story would otherwise rediscover — goes in the feature's `NOTES.md`, not the review, which is about this story. Append it in the file's format, `Found: review US-NN, <YYYY-MM-DD>`, one fact per entry with its pointer. Read the file first and don't repeat an entry; never edit or delete one — an entry the code contradicts is a note for the user.
+
 ## A second round
 
 When a review document already exists, build has answered it. Check its findings first: each one is **resolved** (show the evidence), **still open**, or **disputed by build** — read build's reason in the document and judge it; a dispute you still hold goes to the user, not back to build a second time. Then review what changed since, as above. Rewrite the document: previous findings with their status, then the new ones.
@@ -106,6 +109,7 @@ When a review document already exists, build has answered it. Check its findings
 - The findings, blocking first, one line each.
 - Lint and test output, including failures.
 - Changes you could not attribute to the story.
+- The entries you appended to `NOTES.md`.
 
 End with exactly one of:
 

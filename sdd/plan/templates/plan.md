@@ -34,7 +34,7 @@ reads the steps. One row per spec scenario.>
 
 | Scenario | Level | Test file | Drives | Setup |
 |---|---|---|---|---|
-| <scenario title, verbatim> | unit \| integration \| end-to-end | `<path>` | <endpoint + method, route + elements, or function signature> | <fixtures, accounts, existing helpers> |
+| <scenario title, verbatim> | unit \| integration \| end-to-end | `<path, named after the feature or journey, not the story>` | <endpoint + method, route + elements, or function signature> | <fixtures, accounts, existing helpers> |
 
 ### Existing tests this story changes
 
@@ -87,14 +87,6 @@ criterion — say which.>
 able to recognise the expected failure is worth as much as avoiding it.>
 
 ---
-
-## To promote into the spec
-
-<Durable knowledge found while planning — traps that will still be traps after
-this story ships. The human moves these into the spec's "Watch out for" section;
-this plan is deleted and would take them with it.>
-
-- **<The trap>** — <why>.
 
 ## Problems found in the spec
 

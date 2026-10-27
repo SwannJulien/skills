@@ -13,7 +13,7 @@ Two agents on purpose. Tests written by the agent that writes the code test what
 
 The user names one. If they don't, read the feature `README.md` and take the first story whose acceptance criteria are not all ticked — then confirm before writing anything.
 
-Each story lives in its own folder under the feature: `FEAT-<feature-slug>/US-NN-<slug>/`, holding `US-NN-<slug>-spec.md` and `US-NN-<slug>-plan.md`. If the plan is missing, stage 2 has not run — say so and stop. If a `US-NN-<slug>-review.md` sits beside them with open findings, this run answers it — go to "After the review".
+Each story lives in its own folder under the feature: `FEATNN_<feature-slug>/US-NN-<slug>/`, holding `US-NN-<slug>-spec.md` and `US-NN-<slug>-plan.md`. If the plan is missing, stage 2 has not run — say so and stop. If a `US-NN-<slug>-review.md` sits beside them with open findings, this run answers it — go to "After the review".
 
 One story per run. The stories were cut to be shippable alone; implementing two at once forfeits that.
 
@@ -21,8 +21,9 @@ One story per run. The stories were cut to be shippable alone; implementing two 
 
 1. **The project's agent instructions** (`CLAUDE.md` or `.claude/CLAUDE.md`, `AGENTS.md`) — build and verify commands, code language, house style, and the commands that must not be run without asking. Respect that last list: it exists because something in this project bites. Where they describe style, naming or structure, the code outranks them; where they require something, they bind — see "Build it".
 2. **`.claude/spec/conventions.md`** — where specs live, the test levels, and how a walkthrough is performed.
-3. **The spec**, whole. The acceptance criteria are your definition of done. The scenarios are the behavior you owe. **Decisions and non-goals** is binding — a non-goal is not a nice extra to add.
-4. **The plan**.
+3. **The feature's `NOTES.md`**, beside its `README.md`, if it exists — facts and traps earlier stages found in this code, each with a pointer. The plan was written with it, but an entry the plan didn't need can still bite your route.
+4. **The spec**, whole. The acceptance criteria are your definition of done. The scenarios are the behavior you owe. **Decisions and non-goals** is binding — a non-goal is not a nice extra to add.
+5. **The plan**.
 
 ## Tests first
 
@@ -77,6 +78,18 @@ Do not rewrite the spec to match what you built. A spec edited to fit the implem
 
 Finish everything that does not depend on the problem, and state plainly what you left out.
 
+### What the next story should know
+
+When building shows you a durable fact about the code — one a later story would otherwise rediscover, a trap the plan missed — append it to the feature's `NOTES.md`, creating the file if needed, headed `# <Feature name> — notes`:
+
+```markdown
+- **<The fact, stated plainly>**
+  `<path and identifier that show it>`.
+  Found: build US-NN, <YYYY-MM-DD>. Affects: <what a later story would trip on>.
+```
+
+One fact per entry, with its pointer. Read the file first and don't repeat an entry. Never edit or delete one, even one the code now contradicts — report it; pruning is the human's.
+
 ## Verify
 
 Two things, in order.
@@ -87,7 +100,7 @@ That checkbox edit is the **only** change you may make to the spec document on y
 
 Leave unticked anything you could not verify, and say why in your report. An unticked box is useful information; a ticked box that isn't true poisons every later stage.
 
-**2. The end-to-end verification walkthrough.** Perform it, in order, as written. Where it needs something you cannot do — a browser you must not install, a service you must not start, a click only a human can make — do every step you can, then stop and tell the user exactly which step they need to perform and what they should see.
+**2. The end-to-end verification walkthrough.** Perform it, in order, as written, through the interface it names — for a UI, drive it with the project's end-to-end browser harness, not with a database shell or a request tool. Where it needs something you cannot do — a browser you must not install, a service you must not start, a click only a human can make — do every step you can, then stop and tell the user exactly which step they need to perform and what they should see.
 
 Record what each step you performed actually produced — the response, the screen, the row — next to what the step says you should see. Your run is not the user's walkthrough and never stands in for it: they judge whether what was observed is what they meant, and they can only judge what you show them.
 
@@ -101,6 +114,7 @@ Run the project's lint and every level of its tests, end-to-end included, from t
 - How far you got through the end-to-end walkthrough: each step you performed with what it produced, and the exact steps left for the user.
 - Lint and test output — including failures, with the output. Never report a story as done over a failing check.
 - Anything you noticed and deliberately left alone.
+- The entries you appended to `NOTES.md`, and any existing entry the code contradicts.
 - Anything you believe is wrong in the spec.
 
 State completion plainly when it is true and verified. When it isn't, say which part isn't, without hedging the rest.
@@ -152,3 +166,4 @@ When the user says the walkthrough passed, close the story out — without being
 2. Run lint and the whole test suite again, end-to-end included.
 3. Report: criteria ticked, any left unticked and why, lint and test output, amendments made and the stories they affect.
 4. If everything holds, say the story is done and offer to commit it. Never commit without being asked. If walkthrough feedback changed more than a line or two of code, offer `/review US-NN` first: those changes are unreviewed.
+5. If this was the feature's last open story, go through its `NOTES.md`. The file belongs to the feature, so no other feature will read it: an entry that holds beyond this feature — a fact an agent fixing a bug with no spec would need — belongs in the project's agent instructions. Propose those entries, rewritten in that file's style, and apply them only with approval: it is the user's file. Leave the rest where they are.

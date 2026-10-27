@@ -341,7 +341,8 @@ under a stated size.
 
 Recommended order. Tick when merged into the skills.
 
-- [ ] Feature `NOTES.md` layer (Part 1, §1) — spec, plan, build
+- [x] Feature `NOTES.md` layer (Part 1, §1) — spec, plan, build, review
+  - Done 2026-10-27: plan, build and review read it and append (read first, no repeats, never edit); plan's "To promote into the spec" removed; spec reads it when adding to a feature; on the feature's last story, build proposes moving entries that hold beyond the feature into the agent instructions, applied on approval.
 - [ ] Plan as context pack: Read list + Established facts (Part 1, §2) — plan template, build
 - [ ] Executable, feasibility-checked walkthroughs (Part 2, §1) — spec, plan
 - [ ] Amendment protocol and dependency check (Part 2, §2) — spec, plan, build

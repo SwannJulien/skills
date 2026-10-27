@@ -103,14 +103,17 @@ implementation stage — they are the completion signal.>
 
 ## End-to-end verification
 
-<One ordered walkthrough a human can actually perform, through real interfaces.
-Replays the scenarios as a single sequence — it does not restate them.>
+<One ordered walkthrough a human can actually perform, in the interface the
+story's user uses. Replays the scenarios as a single sequence — it does not
+restate them.>
 
-**Setup**: <fixtures, accounts, state needed before step 1>
+**Setup**: <fixtures, accounts, state needed before step 1, loaded with the
+project's own commands>
 
 1. <action> → <what you should see>
 2. <action> → <what you should see>
-3. <verification through a lower-level interface where the user's one can't show it>
+3. <action that shows the outcome lasted — reload, sign in again, open it
+   elsewhere in the app> → <what you should see>
 
 **Cleanup**: <how to undo the setup>
 

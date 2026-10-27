@@ -21,7 +21,8 @@ by absolute path to this file.
 - **One test per row of the test map, at the level and path it names**, named
   `US-NN: <scenario title>` — verbatim, so the scenario can be found from the
   test and the test from the scenario. A scenario may need more than one test;
-  each carries the same name, with a suffix.
+  each carries the same name, with a suffix. When the path is an existing file,
+  add to it; don't open a sibling file for this story.
 - **Assert the scenario's `Then` and `And` lines, and nothing the spec does not
   say.** A test asserting an implementation detail — a private function, a CSS
   class, the order of two unrelated calls — fails the day the code is improved,

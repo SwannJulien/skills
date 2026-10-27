@@ -47,8 +47,8 @@ stages detect commands from the repo themselves and say what they guessed.
 | Specs root | an existing specs/stories/docs tree; otherwise propose `docs/specs/` |
 | Glossary | an existing `GLOSSARY.md`, ubiquitous-language or domain-terms document; otherwise propose `GLOSSARY.md` at the root, created when the first term resolves |
 | Layers | the project's manifests and the directory layout at the repo root |
-| Walkthrough interfaces | whatever a person uses to drive and inspect the system — a UI, a request collection, a CLI, a shell onto its storage |
-| Walkthrough setup | fixture files, seed scripts, test accounts named in docs |
+| Walkthrough interface | what the system's user drives it through — the UI when there is one; an API or CLI only when that is what its user uses |
+| Walkthrough setup | fixture files, seed and reset scripts, test accounts named in docs — the tools that put the system in a known state, never used to observe an outcome |
 | Test levels | existing test directories and their naming, test-runner configuration, browser-automation configuration, which levels CI runs |
 | End-to-end harness | what drives the app from outside — a browser-automation tool for a UI, an HTTP client for an API, the binary itself for a CLI — and what must be running first |
 
@@ -72,10 +72,14 @@ must not be run — live in the project's agent instructions, not here.
 
 ## Documents
 
-- **Specs root**: `<path>` — one folder per feature `FEAT-<slug>/`, holding
+- **Specs root**: `<path>` — one folder per feature `FEATNN_<slug>/`, holding
   `README.md` and one folder per story `US-NN-<slug>/` with
   `US-NN-<slug>-spec.md` and `US-NN-<slug>-plan.md` inside
-- **Numbering**: per feature folder, from `US-01`
+- **Notes**: `NOTES.md` in each feature folder — durable facts about the code
+  found by plan, build and review, one per entry with a pointer. Agents only
+  append; delete an entry when it stops being true
+- **Numbering**: features across the specs root, from `FEAT01`, each new one
+  the highest existing number plus one; stories per feature folder, from `US-01`
 - **Status**: every story is `draft` until the user approves it at gate 1;
   plan refuses a story that is not `approved`
 - **Glossary**: `<path>` — the project's vocabulary. The spec interview writes
@@ -106,10 +110,11 @@ end-to-end. The names are the project's own.>
 
 ## End-to-end walkthrough
 
-- **Interfaces**: <what a walkthrough goes through, in order of preference —
-  e.g. the UI, a request collection at `<path>`, a shell onto its storage>
+- **Interface**: <what the system's user drives it through, e.g. the web app
+  at `<url>`. Every walkthrough step goes through it>
 - **Setup**: <the accounts and data a walkthrough starts from; how to load
-  them is in the agent instructions>
+  and reset them is in the agent instructions. Setup tools prepare state;
+  they never observe an outcome>
 
 ## Standing acceptance criteria
 
@@ -124,7 +129,7 @@ collection".>
 ## After writing
 
 Show the user a summary — specs root, test levels and any marked `missing`,
-walkthrough interfaces, any addition you
+walkthrough interface, any addition you
 proposed to the agent instructions, anything you had to guess — and get
 confirmation before continuing to the interview. A wrong specs root discovered
 after twelve documents are written is an annoying thing to fix.
