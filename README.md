@@ -250,7 +250,9 @@ required to record its own decisions and the alternatives it rejected.
 ### Setup
 
 Install all four as described in [Installing a skill](#installing-a-skill);
-they are meant to be used together. The first run in a new project writes
+they are meant to be used together. `story`, which chains the last three, is
+optional and must sit beside them: it finds their `SKILL.md` as siblings of its
+own folder. The first run in a new project writes
 `.claude/spec/conventions.md` — where specs live, the layers a story can name,
 how a walkthrough is performed, the criteria every story carries. Commit it: all
 four skills read it, and it is what keeps project plumbing out of the interview.
@@ -306,6 +308,35 @@ ones.
 
 Repeat from `/plan` per story, reading each spec before planning it. Re-run
 `/spec` only when the feature changes shape.
+
+#### One command per story: `/story`
+
+Between gate 1 and gate 2 nothing needs your judgment unless a stage says so,
+yet the sequence above has you launch every stage. `/story US-01` runs it for
+you, from an approved spec to "ready for your walkthrough":
+
+```
+/story US-01
+    → plan, in a subagent           stops only for a design choice, an ADR
+                                    or a spec problem, asked one at a time
+    → build, in this session        test-writer subagent included
+    → review, in a fresh subagent   never told anything about the build
+    → answers the findings, reviews again — two rounds at most
+    → hands over: each walkthrough step with what build observed, what is
+      left for you, what the review found and what became of it
+
+  you: perform the walkthrough, report each point   ← gate 2, unchanged
+```
+
+Launch it in a session on the model you build with: plan and review are
+dispatched on the most capable model your agent offers (Opus from a Sonnet
+session, on Claude Code), build runs on the session's own.
+
+It adds no rule: each stage follows its own skill, in the clean context that
+skill was designed around — plan and review start cold in subagents. It resumes
+from the documents, so a run interrupted after the plan or mid-review picks up
+where the story's folder says it is. The four commands remain for running one
+stage on its own.
 
 There are two human gates. The plan is not one: once you agree on the behavior,
 the route is the agent's, and plan's final message tells you if anything needs

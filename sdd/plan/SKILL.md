@@ -127,4 +127,21 @@ Report: the plan path, the step count, the test count per level, the existing te
 The user may never open the plan — agreeing on the spec is their gate, the route is yours. So anything that needs them must be in this report, not only in the document. End with exactly one of:
 
 - **Nothing needs you — run `/build`.** Only when no criterion is unmapped, no scenario is left unautomated, nothing in the spec is wrong, and there are no design choices.
-- **Before building, you need to:** a short numbered list. Each item is a spec amendment, or a decision the user must make, with why building without it would go wrong. Put each design choice to them as a question with your recommendation, worded so "yes" accepts it — and, where you drafted an ADR, whether to record it. Most are a "yes"; the point is that they are seen before the code makes them expensive.
+- **Before building, you need to:** a numbered list, one line per item: a spec amendment, or a decision the user must make — each design choice, and whether to record each ADR you drafted. Titles only, so the user sees how many there are; the detail comes with each question. Then go through them as below.
+
+### One question at a time
+
+Ask the items as an interview, the way the spec skill's grilling does — **one question**, wait for the answer, then the next. Ten questions at once get ten skimmed answers, and a design choice seen but not read is how it gets expensive later.
+
+Order them so an answer can make later questions pointless: spec problems first, since an amendment may change the plan; then design choices, the one whose reversal would cost most first, each drafted ADR asked right after the choice it records — pointless if that choice was rejected. Each one says why building without an answer would go wrong:
+
+```
+**<n>/<total> — <title>**: <the choice, the alternative, what the code says
+about each, what reversing it would cost, what it means for later stories>
+
+➡️ <your recommendation, and why>
+```
+
+If your agent has a structured question tool with selectable options, use it, with your recommendation first and a free-text answer always available. Accepting should take one word, and choosing the other option or explaining something else should be just as easy.
+
+After each answer, act on it before asking the next: an accepted choice stays as planned; a rejected one — revise the affected steps, the test map and the trace table, and say what changed; an ADR accepted — write it; a spec problem — the user amends the spec through the spec skill or by hand, and you re-plan what depends on it. If the user tells you to go with your recommendations for the rest, list what you took. When every item is answered, end with **Nothing needs you — run `/build`**, or with the amendments still outstanding.

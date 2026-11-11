@@ -373,4 +373,7 @@ Recommended order. Tick when merged into the skills.
 - [ ] Lightweight path for small changes (Part 3, §8) — spec
 - [ ] Smaller items (Part 2, §7)
   - Done 2026-10-25: interaction flow sketched in the proposal for front-end stories.
+- [x] One command per story (review of 2026-11-11) — new `story` skill
+  - Done 2026-11-11: `/story US-NN` chains plan (subagent), build (main session) and review (fresh subagent per round, briefed with nothing about the build), answers the review's findings for two rounds at most, and stops only for a design choice, a spec problem, a command that needs leave, a check it cannot fix, or the walkthrough. Resumes from the story folder. No change to plan, build or review. Not yet run on a real story.
+  - Left, from the same review: close-out that skips the reruns when the diff is the one review approved (needs a commit or branch per story); review conditional on the story's risk.
 - [ ] Optional: `/retro` skill to mine a project's sessions after each feature
